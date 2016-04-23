@@ -1,5 +1,4 @@
-//var generateAlgorithm = require('../src/wbaes-generator.js');
-//generateAlgorithm('abcdef1234567890', 'wbaes.js');
+'use strict';
 
 var bAes = require('../wbaes.base.js'),
     oAes = require('../wbaes.obf.js');
@@ -19,6 +18,7 @@ function extEncryptionTest(text, keyStr, ctr){
     return cipherText;
 }
 */
+
 module.exports = {
     'Base AES, english text' : function(test) {
         var text = 'You can do anything, but not everything.';
@@ -26,6 +26,7 @@ module.exports = {
         test.strictEqual(basicEncryptionTest(bAes, text), text);
         test.done();
     },
+
     'Base AES, russian text' : function(test) {
         var text = 'Быть энтузиасткой сделалось ее общественным положением, и иногда, когда ей даже того не хотелось, она, чтобы не обмануть ожиданий людей, знавших ее, делалась энтузиасткой.';
         test.expect(1);
@@ -121,5 +122,4 @@ module.exports = {
         test.strictEqual(oAes.encrypt('f69f2445df4f9b17ad2b417be66c3710', {counter: 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', encoding: 'hex'}).substring(32), '1a13fb36472fe7a75ff9570e0cf296f4');
         test.done();
     },
-
 };

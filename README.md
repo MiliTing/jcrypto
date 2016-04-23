@@ -4,6 +4,7 @@ This is an experimental white-box cryptography tools for ECMAScript language obf
 
 ## Features
 - whitebox AES128-CTR
+- whitebox HMAC-SHA256
 
 ## Contributors
 - Denis Kolegov

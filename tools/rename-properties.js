@@ -1,4 +1,4 @@
-(function (){
+(function rename(){
     'use strict';
 
     var estraverse = require('estraverse'),
@@ -75,7 +75,7 @@
     function renameStrings(tree){
         var str, rstr = '';
         estraverse.replace(tree, {
-            leave: function (node, parent) {
+            leave: function (node, parent) { // jshint ignore:line
                 if(node.type === 'Literal' &&
                     (node.raw[0] === '"' || node.raw[0] === '\'')) {
                     str = node.value;

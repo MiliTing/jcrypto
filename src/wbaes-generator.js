@@ -1,4 +1,4 @@
-(function (){
+(function wbaesGenerator(){
     'use strict';
 
     var fs = require('fs'),
@@ -230,7 +230,7 @@
 
     // Generate whitebox-aes code and write it in a file
     wbAes.generateAlgorithm = function(key, options){
-        var code, mixing, result, optimized, tree, body, TBoxes, TyTables, i, len, file, encoding;
+        var code, mixing, result, tree, body, TBoxes, TyTables, i, len, file, encoding;
         encoding = options.encoding;
         if ((key.length !== 16 && !encoding) ||
                 (key.length !== 32 && encoding)) {
@@ -289,7 +289,7 @@
         }
 
         var key = args['_'][0].toString(),
-            file = args.o || args.output,
+            file = args.o || args.output || 'wbaes.js',
             encoding = args.e || args['encoding'];
             
         wbAes.generateAlgorithm(key, {

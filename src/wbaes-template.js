@@ -1,7 +1,6 @@
-(function (){
+(function wbaesTemplate(){
     'use strict';
     var Aes = {};
-
     Aes.blockSize = 16;
     Aes.nBits = 128;
 
@@ -80,7 +79,7 @@
      * @returns {[number]}  Array of char codes.
      */
     Aes.h2a = function(str) {
-        var hexCodes = str.match(/[0-9a-f]{2}/g), len = hexCodes.length;
+        var hexCodes = str.match(/[0-9a-f]{2}/gi), len = hexCodes.length;
         var array = new Array(len);
         for (var i = 0; i < len; i++) {
             array[i] = parseInt(hexCodes[i],16);
@@ -99,7 +98,7 @@
             configuration = {};
         }
 
-        var i, b, c, tmp, counter;
+        var i, b, c, counter;
         var counterBlock = [];
         for (i = 0; i < Aes.blockSize; i++){
             counterBlock[i] = 0;
@@ -109,7 +108,7 @@
         if (configuration.hasOwnProperty('counter')) {
             counter = Aes.h2a(configuration.counter);
             if (counter.length !== Aes.blockSize) {
-                throw new Error("Counter must be " + Aes.blockSize + " hex encoded bytes");
+                throw new Error('Counter must be ' + Aes.blockSize + ' hex encoded bytes');
             }
             counterBlock = counter.slice();
         } else {

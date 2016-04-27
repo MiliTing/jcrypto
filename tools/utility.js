@@ -1,6 +1,5 @@
-(function () {
+(function utility() {
     'use strict';
-
     
     // generateNextName
 
@@ -18,8 +17,6 @@
 
         return result;
     };
-
-    
 
     ZeroSequenceCache = [];
 
@@ -66,9 +63,20 @@
         return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
     };
 
+    // hexEncode
+
+    var hexEncode = function(s){
+        var hex = '', i, len;
+        for (i = 0, len = s.length; i < len; i++) {
+            hex += s.charCodeAt(i).toString(16);
+        }
+        return hex;
+    };
+
     module.exports = {
         generateNextName: generateNextName,
         generateRandomString: generateRandomString,
         generateRandomInteger: generateRandomInteger,
+        hexEncode: hexEncode
     };
 })();

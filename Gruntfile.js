@@ -113,7 +113,7 @@ module.exports = function(grunt) {
     'jsvalidate',
     //'shell',
     'jshint',
-    'rename',
+    //'rename',
     'jscomplexity-threshold',
     'listComplexity',
     'nodeunit',

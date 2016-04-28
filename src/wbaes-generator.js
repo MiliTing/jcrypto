@@ -4,7 +4,7 @@
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen');
-        
+
     var wbAes = {};
 
     wbAes.sBox =  [
@@ -116,7 +116,8 @@
         var Nr = Nk + 6;       // no of rounds: 10/12/14 for 128/192/256-bit keys
         var w = new Array(Nb*(Nr+1));
         var temp = new Array(4);
-        var i, r, t, j, k;
+        var i, r, t;
+        
         // initialise first Nk words of expanded key with cipher key
         for (i = 0; i < Nk; i++) {
              r = [key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]];
@@ -145,7 +146,15 @@
                 w[i][t] = w[i-Nk][t] ^ temp[t];
             }
         }
-        var m = [];
+
+        return wbAes.formKeyState(w);
+    };
+
+    /*
+     * Allign keySchedule into AES-state arrays
+     */
+    wbAes.formKeyState = function(keySchedule) {
+        var i, j, k, m = [];
         for(i = 0; i < 11; i++) {
             m[i] = [];
             for(j = 0; j < 4; j++) {
@@ -154,8 +163,8 @@
         }
         for(i = 0; i < 11; i++) {
             for(j = 0; j < 4; j++) {
-                for(k = 0; k < 4; k++){
-                    m[i][k][j] = w[ i * 4 + j][k];
+                for(k = 0; k < 4; k++) {
+                    m[i][k][j] = keySchedule[ i * 4 + j][k];
                 }
             }
         }
@@ -291,7 +300,7 @@
         var key = args['_'][0].toString(),
             file = args.o || args.output || 'wbaes.js',
             encoding = args.e || args['encoding'];
-            
+
         wbAes.generateAlgorithm(key, {
             file: file,
             encoding: encoding

@@ -52,7 +52,7 @@ module.exports = function(grunt) {
           options : {
             quiet : false,         // display report (see screenshot), default false
             complexity : 100,      // default 100, lower is better
-            maintainability : 100, // default 20, higher is better
+            maintainability : 20, // default 20, higher is better
             lineNumber : 4000      // default 4000, lower is better
           }
         }
@@ -86,7 +86,6 @@ module.exports = function(grunt) {
     listComplexity: {
         all: {
             src: ['src/*.js', 'test/*.js', 'tools/*.js'],
-            //src: ['test/*.js', 'tools/*.js'],
             exclude: ['!test/fixtures/*.js'],
             options: {
                 verbose: false,

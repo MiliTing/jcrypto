@@ -17,7 +17,8 @@
   "scripts": {
     "precommit": "grunt jshint",
     "test": "nodeunit test/*.js",
-    "complexity": "node node_modules/complexity-report/src/index.js src/*.js"
+    "complexity": "node node_modules/complexity-report/src/index.js src/**/*.js",
+    "listComplexity": "grunt listComplexity"
   },
   "devDependencies": {
     "cli-table": "^0.3.1",

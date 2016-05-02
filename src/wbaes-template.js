@@ -98,12 +98,8 @@
             configuration = {};
         }
 
-        var i, b, c, counter;
+        var counter, ciphertext;
         var counterBlock = [];
-        for (i = 0; i < Aes.blockSize; i++){
-            counterBlock[i] = 0;
-        }
-
         // Choose a way to initialise counter block
         if (configuration.hasOwnProperty('counter')) {
             counter = Aes.h2a(configuration.counter);
@@ -112,23 +108,7 @@
             }
             counterBlock = counter.slice();
         } else {
-            // Initialise 1st 8 bytes of counter block with nonce (NIST SP800-38A §B.2):
-            // [0-1] = millisec, [2-3] = random, [4-7] = seconds,
-            // together giving full sub-millisec uniqueness up to Feb 2106
-            var nonce = (new Date()).getTime();
-            var nonceMs = nonce % 1000;
-            var nonceSec = Math.floor(nonce / 1000);
-            var nonceRnd = Math.floor(Math.random() * 0xffff);
-
-            for (i = 0; i < 2; i++) {
-                counterBlock[i]   = (nonceMs  >>> i*8) & 0xff;
-            }
-            for (i = 0; i < 2; i++) {
-                counterBlock[i+2] = (nonceRnd >>> i*8) & 0xff;
-            }
-            for (i = 0; i < 4; i++) {
-                counterBlock[i+4] = (nonceSec >>> i*8) & 0xff;
-            }
+            counterBlock = Aes.initDefaultCounter();
         }
         // Store it to go on the front of the ciphertext
         counter = counterBlock.slice();
@@ -145,6 +125,59 @@
                 plaintext = Aes.s2a(Aes.utf8Encode(plaintext));
         }
 
+        ciphertext = Aes.encryptBytes(plaintext, counterBlock);
+        ciphertext = counter.concat(ciphertext);
+
+        // Encode ciphertext if necessary
+        switch (configuration.encoding) {
+            case 'hex':
+                ciphertext = Aes.a2h(ciphertext);
+                break;
+            default:
+                ciphertext = Aes.a2s(ciphertext);
+        }
+
+        return ciphertext;
+    };
+
+    /**
+     * Initialise 1st 8 bytes of counter block with nonce (NIST SP800-38A §B.2)
+     *      [0-1] = millisec, [2-3] = random, [4-7] = seconds,
+     *      together giving full sub-millisec uniqueness up to Feb 2106
+     * @returns {[number]} counter block.
+     */
+    Aes.initDefaultCounter = function (){
+        var i, counterBlock = [];
+        for (i = 0; i < Aes.blockSize; i++){
+            counterBlock[i] = 0;
+        }
+
+        var nonce = (new Date()).getTime();
+        var nonceMs = nonce % 1000;
+        var nonceSec = Math.floor(nonce / 1000);
+        var nonceRnd = Math.floor(Math.random() * 0xffff);
+
+        for (i = 0; i < 2; i++) {
+            counterBlock[i]   = (nonceMs  >>> i*8) & 0xff;
+        }
+        for (i = 0; i < 2; i++) {
+            counterBlock[i+2] = (nonceRnd >>> i*8) & 0xff;
+        }
+        for (i = 0; i < 4; i++) {
+            counterBlock[i+4] = (nonceSec >>> i*8) & 0xff;
+        }
+
+        return counterBlock;
+    };
+
+    /**
+     * Encrypt bytes using provided AES algorithm.
+     * @param   {[number]} Plaintext bytes.
+     * @param   {[number]} Counter block.
+     * @returns {[number]} Encrypted bytes.
+     */
+    Aes.encryptBytes = function(plaintext, counterBlock) {
+        var b, i;
         var nBlocks = Math.ceil(plaintext.length / Aes.blockSize);
         var ciphertext = [];
 
@@ -161,24 +194,16 @@
 
             // Set counter (block #) in last 8 bytes of counter block (leaving nonce in 1st 8 bytes)
             // Done in two stages for 32-bit ops: using two words allows us to go past 2^32 blocks (68GB)
-            for (c = 0; c < 4; c++) {
-                counterBlock[15-c] = (b >>> c*8) & 0xff;
-            }
-            for (c = 0; c < 4; c++) {
-                counterBlock[15-c-4] = (b/0x100000000 >>> c*8);
+            for (i = 15; i >= 8; i--) {
+                if (counterBlock[i] === 0xff) {
+                    counterBlock[i] = 0;
+                }
+                else {
+                    counterBlock[i]++;
+                    break;
+                }
             }
         }
-        ciphertext = counter.concat(ciphertext);
-
-        // Encode ciphertext if necessary
-        switch (configuration.encoding) {
-            case 'hex':
-                ciphertext = Aes.a2h(ciphertext);
-                break;
-            default:
-                ciphertext = Aes.a2s(ciphertext);
-        }
-
         return ciphertext;
     };
 
@@ -204,10 +229,36 @@
         }
 
         // Recover nonce from 1st 16 bytes of ciphertext
-        var offset = Aes.blockSize;
-        var ctrTxt = ciphertext.slice(0, offset);
+        var ctrTxt = ciphertext.slice(0, Aes.blockSize);
         var counterBlock = Aes.s2a(ctrTxt);
-        var i, b, c;
+
+        var plaintextBytes = Aes.decryptBytes(ciphertext, counterBlock);
+
+        // Encode if necessary
+        var plaintext = '';
+        switch (configuration.encoding) {
+            case 'binary':
+                plaintext = Aes.a2s(plaintextBytes);
+                break;
+            case 'hex':
+                plaintext = Aes.a2h(plaintextBytes);
+                break;
+            default:
+                plaintext = Aes.utf8Decode(Aes.a2s(plaintextBytes));
+        }
+
+        return plaintext;
+    };
+
+    /**
+     * Decrypt bytes using provided AES algorithm.
+     * @param   {[number]} Encrypted bytes.
+     * @param   {[number]} Counter block.
+     * @returns {[number]} Decrypted bytes.
+     */
+    Aes.decryptBytes = function(ciphertext, counterBlock) {
+        var i, b;
+        var offset = Aes.blockSize;
 
         // Separate ciphertext into blocks (skipping past initial 8 bytes)
         var nBlocks = Math.ceil((ciphertext.length - offset) / Aes.blockSize);
@@ -228,28 +279,18 @@
             plaintextBytes = plaintextBytes.concat(blockBytes);
 
             // Set counter (block #) in last 8 bytes of counter block (leaving nonce in 1st 8 bytes)
-            for (c = 0; c < 4; c++) {
-                counterBlock[15-c] = ((b) >>> c*8) & 0xff;
-            }
-            for (c = 0; c < 4; c++) {
-                counterBlock[15-c-4] = (((b+1)/0x100000000-1) >>> c*8) & 0xff;
+            for (i = 15; i >= 8; i--) {
+                if (counterBlock[i] === 0xff) {
+                    counterBlock[i] = 0;
+                }
+                else {
+                    counterBlock[i]++;
+                    break;
+                }
             }
         }
 
-        // Encode if necessary
-        var plaintext = '';
-        switch (configuration.encoding) {
-            case 'binary':
-                plaintext = Aes.a2s(plaintextBytes);
-                break;
-            case 'hex':
-                plaintext = Aes.a2h(plaintextBytes);
-                break;
-            default:
-                plaintext = Aes.utf8Decode(Aes.a2s(plaintextBytes));
-        }
-
-        return plaintext;
+        return plaintextBytes;
     };
 
     /*

@@ -251,7 +251,7 @@ module.exports = {
         test.done();
     },
     //Some custom HMAC tests
-    'Empty string HMAC' : function(test) {
+    'Empty input HMAC' : function(test) {
         var testCase = {
             data:  '',
             hash:  'd3a5bd70c0b5394e7eb7b08662b7b8d8e77501edfbd5add0a4180aa0255ac523'
@@ -270,6 +270,200 @@ module.exports = {
         var hmac = require('./fixtures/hmac-emptyKey.js');
         test.expect(1);
         test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.done();
+    },
+    'Empty input and empty key HMAC' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  '',
+            hash:  'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-all-empty.js'});
+        var hmac = require('./fixtures/hmac-all-empty.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.done();
+    },
+    // Tests with text input
+    'Text jsSHA-based Test #1' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F',
+            data:  'abcdefABCDEFaAbBcCdDeEfF1234567890',
+            hash:  '75d33cb96af397922df77618aad9d97d6e2e4f214e776bddb7d8aec067a533c6'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-1.js'});
+        var hmac = require('./fixtures/hmac-text-input-1.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #2' : function(test) {
+        var testCase = {
+            key:   '010203040506',
+            data:  'a',
+            hash:  'bf832c5684f946ffec322235d43437e4eef19b08404e558f34824275b5a21022'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-2.js'});
+        var hmac = require('./fixtures/hmac-text-input-2.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #3' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  'a',
+            hash:  '9615a95d4a336118c435b9cd54c5e8644ab956b573aa2926274a1280b6674713'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-3.js'});
+        var hmac = require('./fixtures/hmac-text-input-3.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #4' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  '',
+            hash:  'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-4.js'});
+        var hmac = require('./fixtures/hmac-text-input-4.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #5' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  'фывапролджэФЫВАПРОЛДЖЭ',
+            hash:  '82ab2762c4ce2dbaad4af907b0f009ff6e2efe6b4899a897fad89fd880936804'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-5.js'});
+        var hmac = require('./fixtures/hmac-text-input-5.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #6' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  'фывапролджэФЫВАПРОЛДЖЭ!@#$%^&*()_+',
+            hash:  '1df90083e7b9d4bc736de833c30b42999eabb071fd05391ad818b2a5e332eeea'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-6.js'});
+        var hmac = require('./fixtures/hmac-text-input-6.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text jsSHA-based Test #7' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  '',
+            hash:  '07eff8b326b7798c9ccfcbdbe579489ac785a7995a04618b1a2813c26744777d'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-7.js'});
+        var hmac = require('./fixtures/hmac-text-input-7.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    // Tests with text key and text data
+    'Text key jsSHA-based Test #1' : function(test) {
+        var testCase = {
+            key:   'a',
+            data:  'abcdefABCDEFaAbBcCdDeEfF1234567890',
+            hash:  'bbdae96039d3baf8ebf78c8b2624e2937f466f30f4244630fbd6e63781116e9b'
+        };
+        generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-1.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-1.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #2' : function(test) {
+        var testCase = {
+            key:   '010203040506',
+            data:  'a',
+            hash:  '271e948668d2db84050ac2a331753da28e0a9eb1601de24b322d97ab6b3894d8'
+        };
+        generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-2.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-2.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #3' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  'a',
+            hash:  '9615a95d4a336118c435b9cd54c5e8644ab956b573aa2926274a1280b6674713'
+        };
+        generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-3.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-3.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #4' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  '',
+            hash:  'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
+        };
+        generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-4.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-4.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #5' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  'фывапролджэФЫВАПРОЛДЖЭ',
+            hash:  '82ab2762c4ce2dbaad4af907b0f009ff6e2efe6b4899a897fad89fd880936804'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-5.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-5.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #6' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  'фывапролджэФЫВАПРОЛДЖЭ!@#$%^&*()_+',
+            hash:  '1df90083e7b9d4bc736de833c30b42999eabb071fd05391ad818b2a5e332eeea'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-6.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-6.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #7' : function(test) {
+        var testCase = {
+            key:   '000102030405060708090A0B0C0D0E0F',
+            data:  '',
+            hash:  '07eff8b326b7798c9ccfcbdbe579489ac785a7995a04618b1a2813c26744777d'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-7.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-7.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.done();
+    },
+    'Text key jsSHA-based Test #8' : function(test) {
+        var testCase = {
+            key:   '',
+            data:  '',
+            hash:  'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
+        };
+        generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-8.js'});
+        var hmac = require('./fixtures/hmac-text-input-text-key-8.js');
+        test.expect(1);
+        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
         test.done();
     },
 };

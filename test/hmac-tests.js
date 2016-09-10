@@ -1,6 +1,20 @@
 'use strict';
-var generateHmac = require('../src/wbhmac-generator.js'),
-    hexEncode = require('../tools/utility.js').hexEncode;
+
+var getHMAC = require('../src/hmac-generator.js');
+var fs = require('fs');
+
+var hexEncode = function(s){
+    var hex = '', i, len;
+    for (i = 0, len = s.length; i < len; i++) {
+        hex += s.charCodeAt(i).toString(16);
+    }
+    return hex;
+};
+
+function generateHmac(k, options) {
+    var code = getHMAC(k, options);
+    fs.writeFileSync(options.file, code);
+}
 
 /* Generate fixtures for the following tests */
 var key = '000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F60616263';

@@ -1,7 +1,7 @@
-(function wbhmacTemplate(){
+(function (){
     'use strict';
-    var Hmac = {};
-    Hmac.blockSize = 16;
+    var hmac = {};
+    hmac.blockSize = 16;
 
     /**
      * Calculate HMAC of meassge using SHA-256 hash function
@@ -9,61 +9,61 @@
      * @param   {object} Configuration object (read more at docs).
      * @returns {string} Hash value.
      */
-    Hmac.hash = function(message, options) {
+    hmac.hash = function(message, options) {
         if (typeof(options) !== 'object') {
             options = {};
         }
         // Decode message if necessary
         switch (options.encoding) {
             case 'hex':
-                message = Hmac.h2s(message);
+                message = hmac.h2s(message);
                 break;
             default:
-                message = Hmac.utf8Encode(message);
+                message = hmac.utf8Encode(message);
         }
         // Using key padded w/ ipad
-        var toHash = Hmac.prepareMessage(message);
-        var hashState = Hmac.states[0].slice();
-        var hashBytes = Hmac.hashBytes(toHash, hashState);
+        var toHash = hmac.prepareMessage(message);
+        var hashState = hmac.states[0].slice();
+        var hashBytes = hmac.hashBytes(toHash, hashState);
         // Using key padded w/ opad
-        toHash = Hmac.prepareMessage(Hmac.a2s(hashBytes));
-        hashState = Hmac.states[1].slice();
-        hashBytes = Hmac.hashBytes(toHash, hashState);
+        toHash = hmac.prepareMessage(hmac.a2s(hashBytes));
+        hashState = hmac.states[1].slice();
+        hashBytes = hmac.hashBytes(toHash, hashState);
         var hash = '';
         // Encode hash value if necessary. Hex output is default
         switch (options.encoding) {
             case 'hex':
-                hash = Hmac.a2h(hashBytes);
+                hash = hmac.a2h(hashBytes);
                 break;
             case 'binary':
-                hash = Hmac.a2s(hashBytes);
+                hash = hmac.a2s(hashBytes);
                 break;
             default:
-                hash = Hmac.a2h(hashBytes);
+                hash = hmac.a2h(hashBytes);
         }
         return hash;
     };
 
     /**
-     * Convert string msg into 512-bit/Hmac.blockSize-integer blocks arrays of ints [§5.2.1]
+     * Convert string msg into 512-bit/hmac.blockSize-integer blocks arrays of ints [§5.2.1]
      * @param   {string}                     Message
-     * @returns {number[[]*Hmac.blockSize]}  Array of blocks each of which consits of Hmac.blockSize integers.
+     * @returns {number[[]*hmac.blockSize]}  Array of blocks each of which consits of hmac.blockSize integers.
      */
-    Hmac.prepareMessage = function(msg) {
+    hmac.prepareMessage = function(msg) {
         // add trailing '1' bit (+ 0's padding) to string [§5.1.1]
         msg += String.fromCharCode(0x80);
         // length (in 32-bit integers) of padded msg
         // + 2 integers of appended length
-        // + Hmac.blockSize integers of already hashed HMAC key block
+        // + hmac.blockSize integers of already hashed HMAC key block
         var msgLen = msg.length / 4 + 2;
-        // number of Hmac.blockSize-integer-blocks required to hold l ints
-        var nBlocks = Math.ceil(msgLen / Hmac.blockSize);
+        // number of hmac.blockSize-integer-blocks required to hold l ints
+        var nBlocks = Math.ceil(msgLen / hmac.blockSize);
         var M = [];
         var i,j;
         for (i = 0; i < nBlocks; i++) {
             M[i] = [];
             // note running off the end of msg is ok 'cos bitwise ops on NaN return 0
-            for (j = 0; j < Hmac.blockSize; j++) {
+            for (j = 0; j < hmac.blockSize; j++) {
                 // encode 4 chars per integer, big-endian encoding
                 M[i][j] = (msg.charCodeAt(i * 64 + j * 4) << 24)   |
                           (msg.charCodeAt(i * 64 + j * 4 + 1)<<16) |
@@ -74,30 +74,30 @@
         // add length (in bits) into final pair of 32-bit integers (big-endian) [§5.1.1]
         // note: most significant word would be (len-1)*8 >>> 32, but since JS converts
         // bitwise-op args to 32 bits, we need to simulate this by arithmetic operators
-        var byteLen = msg.length + Hmac.blockSize * 4 - 1;
-        M[nBlocks-1][Hmac.blockSize-2] = (byteLen * 8) / Math.pow(2, 32);
-        M[nBlocks-1][Hmac.blockSize-2] = Math.floor(M[nBlocks-1][Hmac.blockSize-2]);
-        M[nBlocks-1][Hmac.blockSize-1] = (byteLen * 8) & 0xffffffff;
+        var byteLen = msg.length + hmac.blockSize * 4 - 1;
+        M[nBlocks-1][hmac.blockSize-2] = (byteLen * 8) / Math.pow(2, 32);
+        M[nBlocks-1][hmac.blockSize-2] = Math.floor(M[nBlocks-1][hmac.blockSize-2]);
+        M[nBlocks-1][hmac.blockSize-1] = (byteLen * 8) & 0xffffffff;
         return M;
     };
 
     /**
      * Hash a block of prepared bytes using SHA-256 [§6.1.2]
-     * @param   {number[[]*Hmac.blockSize]} Array of integer blocks get from prepared message
+     * @param   {number[[]*hmac.blockSize]} Array of integer blocks get from prepared message
      * @param   {number[]}                  Hash state object.
      * @returns {number[]}                  Resulting hash state object.
      */
-    Hmac.hashBytes = function(blocks, state) {
+    hmac.hashBytes = function(blocks, state) {
         var W = [];
         var a, b, c, d, e, f, g, h, i, j;
         var nBlocks = blocks.length;
         for (i = 0; i < nBlocks; i++) {
             // 1 - prepare message schedule 'W'
-            for (j = 0;  j < Hmac.blockSize; j++) {
+            for (j = 0;  j < hmac.blockSize; j++) {
                 W[j] = blocks[i][j];
             }
-            for (j = Hmac.blockSize; j < 64; j++) {
-                W[j] = (Hmac.σ1(W[j-2]) + W[j-7] + Hmac.σ0(W[j-15]) + W[j-16]);
+            for (j = hmac.blockSize; j < 64; j++) {
+                W[j] = (hmac.σ1(W[j-2]) + W[j-7] + hmac.σ0(W[j-15]) + W[j-16]);
                 W[j] &= 0xffffffff;
             }
             // 2 - initialise working variables a, b, c, d, e, f, g, h with state values
@@ -105,8 +105,8 @@
             e = state[4]; f = state[5]; g = state[6]; h = state[7];
             // 3 - main loop (note 'addition modulo 2^32')
             for (j = 0; j < 64; j++) {
-                var T1 = h + Hmac.Σ1(e) + Hmac.Ch(e, f, g)  + Hmac.K[j] + W[j];
-                var T2 =     Hmac.Σ0(a) + Hmac.Maj(a, b, c);
+                var T1 = h + hmac.Σ1(e) + hmac.Ch(e, f, g)  + hmac.K[j] + W[j];
+                var T2 =     hmac.Σ0(a) + hmac.Maj(a, b, c);
                 h = g; g = f; f = e;
                 e = (d + T1) & 0xffffffff;
                 d = c; c = b; b = a;
@@ -128,24 +128,24 @@
     /**
      * Rotates right (circular right shift) value x by n positions [§3.2.4].
      */
-    Hmac.ROTR = function(n, x) {
+    hmac.ROTR = function(n, x) {
         return (x >>> n) | (x << (32-n));
     };
 
     /**
      * Logical functions [§4.1.2].
      */
-    Hmac.Σ0  = function(x) { return Hmac.ROTR(2,  x) ^ Hmac.ROTR(13, x) ^ Hmac.ROTR(22, x); };
-    Hmac.Σ1  = function(x) { return Hmac.ROTR(6,  x) ^ Hmac.ROTR(11, x) ^ Hmac.ROTR(25, x); };
-    Hmac.σ0  = function(x) { return Hmac.ROTR(7,  x) ^ Hmac.ROTR(18, x) ^ (x>>>3);  };
-    Hmac.σ1  = function(x) { return Hmac.ROTR(17, x) ^ Hmac.ROTR(19, x) ^ (x>>>10); };
-    Hmac.Ch  = function(x, y, z) { return (x & y) ^ (~x & z); };
-    Hmac.Maj = function(x, y, z) { return (x & y) ^ (x & z) ^ (y & z); };
+    hmac.Σ0  = function(x) { return hmac.ROTR(2,  x) ^ hmac.ROTR(13, x) ^ hmac.ROTR(22, x); };
+    hmac.Σ1  = function(x) { return hmac.ROTR(6,  x) ^ hmac.ROTR(11, x) ^ hmac.ROTR(25, x); };
+    hmac.σ0  = function(x) { return hmac.ROTR(7,  x) ^ hmac.ROTR(18, x) ^ (x>>>3);  };
+    hmac.σ1  = function(x) { return hmac.ROTR(17, x) ^ hmac.ROTR(19, x) ^ (x>>>10); };
+    hmac.Ch  = function(x, y, z) { return (x & y) ^ (~x & z); };
+    hmac.Maj = function(x, y, z) { return (x & y) ^ (x & z) ^ (y & z); };
 
     /**
       * Constants [§4.2.2]
       */
-    Hmac.K = [
+    hmac.K = [
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
         0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
         0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -162,7 +162,7 @@
      * @throws  {Error}  Error on UTF-8 encode
      * @returns {string} Encoded string.
      */
-    Hmac.utf8Encode = function(str) {
+    hmac.utf8Encode = function(str) {
         try {
             var i, charcode, strLen, utf8Len;
             var res = '', utf8 = [];
@@ -204,7 +204,7 @@
     /**
      * Transfrom integer into array of bytes
      */
-    Hmac.i2b = function(n) {
+    hmac.i2b = function(n) {
         var bytes = [], i;
         for (i = 3; i >= 0; i--) {
             bytes[3-i] = (n>>>(i*8)) & 0xff;
@@ -215,10 +215,10 @@
     /**
      * Transfrom an array of integers into a string
      */
-    Hmac.a2s = function(numArr) {
+    hmac.a2s = function(numArr) {
         var string = '', i, j, arrLen, block, bLen;
         for (i = 0, arrLen = numArr.length; i < arrLen; i++) {
-            block = Hmac.i2b(numArr[i]);
+            block = hmac.i2b(numArr[i]);
             for (j = 0, bLen = block.length; j < bLen; j++) {
                 string += String.fromCharCode(block[j]);
             }
@@ -229,10 +229,10 @@
     /**
      * Transfrom an array of integers into a hex string
      */
-    Hmac.a2h = function(numArr) {
+    hmac.a2h = function(numArr) {
         var str = '', i, block, j, arrLen, bLen;
         for (i = 0, arrLen = numArr.length; i < arrLen; i++) {
-            block = Hmac.i2b(numArr[i]);
+            block = hmac.i2b(numArr[i]);
             for (j = 0, bLen = block.length; j < bLen; j++) {
                 str += (block[j] < 16 ? '0': '') + block[j].toString(16);
             }
@@ -244,7 +244,7 @@
      * Decode string from hex representation
      * @throws  {Error}  Error on hex decode
      */
-    Hmac.h2s = function(hexStr) {
+    hmac.h2s = function(hexStr) {
         if (hexStr.length === 0) {
             return '';
         }
@@ -260,5 +260,5 @@
         }
         return res;
     };
-    module.exports.hash = Hmac.hash;
+    module.exports.hash = hmac.hash;
 }());

@@ -1,13 +1,13 @@
-(function wbaesGenerator(){
+(function (){
     'use strict';
 
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen');
 
-    var wbAes = {};
-
-    wbAes.sBox =  [
+    var aes = {};
+    
+    aes.sBox =  [
         0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
         0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
         0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
@@ -27,7 +27,7 @@
     ];
 
     // rCon is Round Constant used for the Key Expansion [1st col is 2^(r-1) in GF(2^8)] [§5.2]
-    wbAes.rCon = [
+    aes.rCon = [
         [ 0x00, 0x00, 0x00, 0x00 ],
         [ 0x01, 0x00, 0x00, 0x00 ],
         [ 0x02, 0x00, 0x00, 0x00 ],
@@ -43,9 +43,9 @@
 
 
     // Tables for field multiplication in AES GF
-    wbAes.multGF = [];
+    aes.multGF = [];
 
-    wbAes.multGF[2] = [
+    aes.multGF[2] = [
         0x00,0x02,0x04,0x06,0x08,0x0a,0x0c,0x0e,0x10,0x12,0x14,0x16,0x18,0x1a,0x1c,0x1e,
         0x20,0x22,0x24,0x26,0x28,0x2a,0x2c,0x2e,0x30,0x32,0x34,0x36,0x38,0x3a,0x3c,0x3e,
         0x40,0x42,0x44,0x46,0x48,0x4a,0x4c,0x4e,0x50,0x52,0x54,0x56,0x58,0x5a,0x5c,0x5e,
@@ -64,7 +64,7 @@
         0xfb,0xf9,0xff,0xfd,0xf3,0xf1,0xf7,0xf5,0xeb,0xe9,0xef,0xed,0xe3,0xe1,0xe7,0xe5
     ];
 
-    wbAes.multGF[3] = [
+    aes.multGF[3] = [
         0x00,0x03,0x06,0x05,0x0c,0x0f,0x0a,0x09,0x18,0x1b,0x1e,0x1d,0x14,0x17,0x12,0x11,
         0x30,0x33,0x36,0x35,0x3c,0x3f,0x3a,0x39,0x28,0x2b,0x2e,0x2d,0x24,0x27,0x22,0x21,
         0x60,0x63,0x66,0x65,0x6c,0x6f,0x6a,0x69,0x78,0x7b,0x7e,0x7d,0x74,0x77,0x72,0x71,
@@ -86,7 +86,7 @@
     /*
      * Rotate 4-byte word w left by one byte
      */
-    wbAes.rotWord = function(w) {
+    aes.rotWord = function(w) {
         var tmp = w[0], i;
         for (i = 0; i < 3; i++) {
             w[i] = w[i+1];
@@ -98,9 +98,9 @@
     /*
      * Apply SBox to 4-byte word w
      */
-    wbAes.subWord = function(w) {
+    aes.subWord = function(w) {
         for (var i = 0; i < 4; i++) {
-            w[i] = wbAes.sBox[w[i]];
+            w[i] = aes.sBox[w[i]];
         }
         return w;
     };
@@ -110,7 +110,7 @@
      * @param   {number[]}   key - Cipher key as 16/24/32-byte array.
      * @returns {number[][]} Expanded key schedule as 2D byte-array (Nr+1 x Nb bytes).
      */
-    wbAes.keyExpansion = function(key) {
+    aes.keyExpansion = function(key) {
         var Nb = 4;            // block size (in words): no of columns in state (fixed at 4 for AES)
         var Nk = key.length/4; // key length (in words): 4/6/8 for 128/192/256-bit keys
         var Nr = Nk + 6;       // no of rounds: 10/12/14 for 128/192/256-bit keys
@@ -132,14 +132,14 @@
             }
             // each Nk'th word has extra transformation
             if (i % Nk === 0) {
-                 temp = wbAes.subWord(wbAes.rotWord(temp));
+                 temp = aes.subWord(aes.rotWord(temp));
                 for (t = 0; t < 4; t++) {
-                    temp[t] ^= wbAes.rCon[i/Nk][t];
+                    temp[t] ^= aes.rCon[i/Nk][t];
                 }
             }
             // 256-bit key has subWord applied every 4th word
             else if (Nk > 6 && i%Nk === 4) {
-                 temp = wbAes.subWord(temp);
+                 temp = aes.subWord(temp);
             }
             // xor w[i] with w[i-1] and w[i-Nk]
             for (t = 0; t < 4; t++) {
@@ -147,13 +147,13 @@
             }
         }
 
-        return wbAes.formKeyState(w);
+        return aes.formKeyState(w);
     };
 
     /*
      * Allign keySchedule into AES-state arrays
      */
-    wbAes.formKeyState = function(keySchedule) {
+    aes.formKeyState = function(keySchedule) {
         var i, j, k, m = [];
         for(i = 0; i < 11; i++) {
             m[i] = [];
@@ -174,7 +174,7 @@
     /*
      * Shift row r of state S left by r bytes [§5.1.2]
      */
-    wbAes.shiftRows = function(state) {
+    aes.shiftRows = function(state) {
         // see asmaes.sourceforge.net/rijndael/rijndaelImplementation.pdf
         var rows = new Array(4);
         for (var i = 0; i < rows.length; i++) {
@@ -184,7 +184,7 @@
     };
 
 
-    wbAes.mergeRoundKey = function(key) {
+    aes.mergeRoundKey = function(key) {
         var k = key[0];
         for(var i = 1; i < 4; i++){
             k = k.concat( key[i] );
@@ -192,23 +192,23 @@
         return k;
     };
 
-    wbAes.generateBoxes = function(key) {
-        key = wbAes.keyExpansion(key);
+    aes.generateBoxes = function(key) {
+        key = aes.keyExpansion(key);
         var TBox = [];
         for(var i = 1; i < 11; i++) {
-            key[i-1] = wbAes.shiftRows(key[i-1]);
-            key[i-1] = wbAes.mergeRoundKey(key[i-1]);
+            key[i-1] = aes.shiftRows(key[i-1]);
+            key[i-1] = aes.mergeRoundKey(key[i-1]);
             if(i === 10) {
-                key[i] = wbAes.mergeRoundKey(key[i]);
+                key[i] = aes.mergeRoundKey(key[i]);
             }
             TBox[i] = [];
             for(var j = 0; j < 16; j++) {
                 TBox[i][j] = [];
                 for(var x = 0; x < 256; x++) {
                     if(i === 10) {
-                        TBox[i][j][x] = wbAes.sBox[x ^ key[i-1][j]] ^ key[i][j];
+                        TBox[i][j][x] = aes.sBox[x ^ key[i-1][j]] ^ key[i][j];
                     } else {
-                        TBox[i][j][x] = wbAes.sBox[x ^ key[i-1][j]];
+                        TBox[i][j][x] = aes.sBox[x ^ key[i-1][j]];
                     }
                 }
             }
@@ -216,7 +216,7 @@
         return TBox;
     };
 
-    wbAes.generateTyTable = function() {
+    aes.generateTyTable = function() {
         var TyTable = [], t = [], x;
 
         t[0] = [0x02, 0x01, 0x01, 0x03];
@@ -225,7 +225,7 @@
         t[3] = [0x01, 0x01, 0x03, 0x02];
 
         var gfMultiply = function (y) {
-            return (y === 0x01) ? x : wbAes.multGF[y][x];
+            return (y === 0x01) ? x : aes.multGF[y][x];
         };
 
         for(var i = 0; i < 4; i++) {
@@ -238,8 +238,8 @@
     };
 
     // Generate whitebox-aes code and write it in a file
-    wbAes.generateAlgorithm = function(key, options){
-        var code, mixing, result, tree, body, TBoxes, TyTables, i, len, file, encoding;
+    aes.generateAlgorithm = function(key, options){
+        var code, mixing, tree, body, TBoxes, TyTables, i, len, encoding;
         encoding = options.encoding;
         if ((key.length !== 16 && !encoding) ||
                 (key.length !== 32 && encoding)) {
@@ -250,10 +250,9 @@
         } else {
             key = new Buffer(key);
         }
-        file = options.file || 'wbaes.js';
-        TBoxes = wbAes.generateBoxes(key);
-        TyTables = wbAes.generateTyTable();
-        code = fs.readFileSync('src/wbaes-template.js', 'utf8');
+        TBoxes = aes.generateBoxes(key);
+        TyTables = aes.generateTyTable();
+        code = fs.readFileSync('src/fixtures/aes-template.js', 'utf8');
         tree = esprima.parse(code);
         // Get module's body
         body = tree.body[0].expression.callee.body.body;
@@ -271,41 +270,8 @@
         for(i = 0, len = mixing.body.length; i < len; i++) {
             body.splice(1 + i, 0, mixing.body[i]);
         }
-        result = tree;
-        fs.writeFileSync(file, escodegen.generate(result));
+        return escodegen.generate(tree);
     };
 
-    var printHelp = function() {
-        console.log('Usage: node wbaes-generator.js [options] key');
-        console.log('Required arguments:');
-        console.log('   key                                         String');
-        console.log('Optional arguments:');
-        console.log('   -h, --help                                  Display this help');
-        console.log('   -e <encoding>, --encoding=<encoding>        Key characters encoding. Posible values: hex');
-        console.log('   -o <file>, --output=<file>                  Place output into <file>');
-    };
-
-    if (require.main === module) {
-        if (process.argv.length <= 2) {
-            printHelp();
-            process.exit(1);
-        }
-
-        var args = require('minimist')(process.argv.slice(2), {'string' : '_'});
-        if ('h' in args || 'help' in args) {
-            printHelp();
-            process.exit(1);
-        }
-
-        var key = args['_'][0].toString(),
-            file = args.o || args.output || 'wbaes.js',
-            encoding = args.e || args['encoding'];
-
-        wbAes.generateAlgorithm(key, {
-            file: file,
-            encoding: encoding
-        });
-        console.log('Generated AES module: ' + file);
-    }
-    module.exports = wbAes.generateAlgorithm;
+    module.exports = aes.generateAlgorithm;
 }());

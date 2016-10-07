@@ -58,6 +58,5 @@ Example:
 - Nikita Oleksov
 
 ## References
-1. [En] [White-Box HMAC.] (http://www.slideshare.net/yalegko/whitebox-hmac-make-your-cipher-secure-to-whitebox-attacks)
-2. [Ru] [HMAC Obfuscation Method for Implementation in Untrusted Systems. ](http://www.mathnet.ru/links/31303c3ca85d02fecff4f980a844ddc1/pdma275.pdf)
-3. [Whiteboxcrypto: protecting cryptographic keys in software applications.](http://www.whiteboxcrypto.com/)
+1. [En] [Oleg Broslavsky, Denis Kolegov, Nikita Oleksov. White-Box HMAC.] (http://www.slideshare.net/yalegko/whitebox-hmac-make-your-cipher-secure-to-whitebox-attacks)
+2. [Ru] [Oleg Broslavsky, Denis Kolegov, Nikita Oleksov. HMAC Obfuscation Method for Implementation in Untrusted Systems. ](http://www.mathnet.ru/links/31303c3ca85d02fecff4f980a844ddc1/pdma275.pdf)

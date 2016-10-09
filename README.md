@@ -48,7 +48,7 @@ The `bin/jcrypto` utility can be used to generate code of white-box crypto algor
 Example:
 
 ```
-# bin/jcrypto -a aes -k 1234567891234567 -o wbaes.js
+$ bin/jcrypto -a aes -k 1234567891234567 -o wbaes.js
 ```
 
 

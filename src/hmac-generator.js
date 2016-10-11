@@ -207,7 +207,7 @@
     hmac.generateAlgorithm = function(key, options){
         var code, mixing, tree, state, body, i, len, encoding;
         encoding = options.encoding;
-        
+
         if (encoding === 'hex') {
             key = new Buffer(key, 'hex');
         } else {
@@ -215,7 +215,7 @@
         }
 
         state = hmac.prepareKeyBlock(key);
-        code = fs.readFileSync('src/fixtures/hmac-template.js', 'utf8');
+        code = fs.readFileSync(__dirname + '/fixtures/hmac-template.js', 'utf8');
         tree = esprima.parse(code);
         // Get module's body
         body = tree.body[0].expression.callee.body.body;

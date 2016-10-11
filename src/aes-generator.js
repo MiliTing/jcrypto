@@ -6,7 +6,7 @@
         escodegen = require('escodegen');
 
     var aes = {};
-    
+
     aes.sBox =  [
         0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
         0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
@@ -117,7 +117,7 @@
         var w = new Array(Nb*(Nr+1));
         var temp = new Array(4);
         var i, r, t;
-        
+
         // initialise first Nk words of expanded key with cipher key
         for (i = 0; i < Nk; i++) {
              r = [key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]];
@@ -252,7 +252,7 @@
         }
         TBoxes = aes.generateBoxes(key);
         TyTables = aes.generateTyTable();
-        code = fs.readFileSync('src/fixtures/aes-template.js', 'utf8');
+        code = fs.readFileSync(__dirname + '/fixtures/aes-template.js', 'utf8');
         tree = esprima.parse(code);
         // Get module's body
         body = tree.body[0].expression.callee.body.body;

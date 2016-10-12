@@ -1,4 +1,4 @@
-(function wbaesTemplate(){
+(function wbaesTemplate() {
     'use strict';
     var Aes = {};
     Aes.blockSize = 16;
@@ -13,8 +13,7 @@
     Aes.utf8Encode = function(s) {
         try {
             return encodeURIComponent(s);
-        }
-        catch(e) {
+        } catch(e) {
             throw new Error('Error on UTF-8 encode');
         }
     };
@@ -28,8 +27,7 @@
     Aes.utf8Decode = function(s) {
         try {
             return decodeURIComponent(s);
-        }
-        catch(e) {
+        } catch(e) {
             throw new Error('Error on UTF-8 decode');
         }
     };
@@ -68,7 +66,7 @@
     Aes.a2h = function(numArr) {
         var hexstring = '';
         for (var i = 0, len = numArr.length; i < len; i++) {
-            hexstring += (numArr[i] < 16 ? '0': '') + numArr[i].toString(16);
+            hexstring += (numArr[i] < 16 ? '0' : '') + numArr[i].toString(16);
         }
         return hexstring;
     };
@@ -82,7 +80,7 @@
         var hexCodes = str.match(/[0-9a-f]{2}/gi), len = hexCodes.length;
         var array = new Array(len);
         for (var i = 0; i < len; i++) {
-            array[i] = parseInt(hexCodes[i],16);
+            array[i] = parseInt(hexCodes[i], 16);
         }
         return array;
     };
@@ -94,7 +92,7 @@
      * @returns {string} Encrypted text.
      */
     Aes.encrypt = function(plaintext, configuration) {
-        if (typeof(configuration) === 'undefined') {
+        if (typeof (configuration) === 'undefined') {
             configuration = {};
         }
 
@@ -146,9 +144,9 @@
      *      together giving full sub-millisec uniqueness up to Feb 2106
      * @returns {[number]} counter block.
      */
-    Aes.initDefaultCounter = function (){
+    Aes.initDefaultCounter = function() {
         var i, counterBlock = [];
-        for (i = 0; i < Aes.blockSize; i++){
+        for (i = 0; i < Aes.blockSize; i++) {
             counterBlock[i] = 0;
         }
 
@@ -158,13 +156,13 @@
         var nonceRnd = Math.floor(Math.random() * 0xffff);
 
         for (i = 0; i < 2; i++) {
-            counterBlock[i]   = (nonceMs  >>> i*8) & 0xff;
+            counterBlock[i]   = (nonceMs  >>> i * 8) & 0xff;
         }
         for (i = 0; i < 2; i++) {
-            counterBlock[i+2] = (nonceRnd >>> i*8) & 0xff;
+            counterBlock[i + 2] = (nonceRnd >>> i * 8) & 0xff;
         }
         for (i = 0; i < 4; i++) {
-            counterBlock[i+4] = (nonceSec >>> i*8) & 0xff;
+            counterBlock[i + 4] = (nonceSec >>> i * 8) & 0xff;
         }
 
         return counterBlock;
@@ -185,10 +183,10 @@
             var encryptedCntr = Aes.encryptBlock(counterBlock);
 
             // Block size is reduced on final block
-            var blockLength = b < (nBlocks - 1) ? Aes.blockSize : (plaintext.length - 1) % Aes.blockSize + 1;
+            var blockLength = b < (nBlocks - 1) ? Aes.blockSize : ((plaintext.length - 1) % Aes.blockSize) + 1;
             var encryptedChars = [];
             for (i = 0; i < blockLength; i++) {
-                encryptedChars[i] = encryptedCntr[i] ^ plaintext[b * Aes.blockSize + i];
+                encryptedChars[i] = encryptedCntr[i] ^ plaintext[(b * Aes.blockSize) + i];
             }
             ciphertext = ciphertext.concat(encryptedChars);
 
@@ -197,8 +195,7 @@
             for (i = 15; i >= 8; i--) {
                 if (counterBlock[i] === 0xff) {
                     counterBlock[i] = 0;
-                }
-                else {
+                } else {
                     counterBlock[i]++;
                     break;
                 }
@@ -214,7 +211,7 @@
      * @returns {string} Decrypted text
      */
     Aes.decrypt = function(ciphertext, configuration) {
-        if (typeof(configuration) === 'undefined') {
+        if (typeof (configuration) === 'undefined') {
             configuration = {};
         }
 
@@ -264,9 +261,11 @@
         var nBlocks = Math.ceil((ciphertext.length - offset) / Aes.blockSize);
         var ct = [];
         for (b = 0; b < nBlocks; b++) {
-            ct[b] = Aes.s2a(ciphertext.slice(offset + b*Aes.blockSize, offset + (b+1)*Aes.blockSize));
+            ct[b] = Aes.s2a(ciphertext.slice(offset + (b * Aes.blockSize), offset + ((b + 1) * Aes.blockSize)));
         }
-        ciphertext = ct;  // ciphertext is now array of block-length char code arrays
+        
+        // ciphertext is now array of block-length char code arrays
+        ciphertext = ct;
 
         var plaintextBytes = [];
         for (b = 0; b < nBlocks; b++) {
@@ -282,8 +281,7 @@
             for (i = 15; i >= 8; i--) {
                 if (counterBlock[i] === 0xff) {
                     counterBlock[i] = 0;
-                }
-                else {
+                } else {
                     counterBlock[i]++;
                     break;
                 }
@@ -300,7 +298,7 @@
         // see asmaes.sourceforge.net/rijndael/rijndaelImplementation.pdf
         var rows = new Array(4);
         for (var i = 0; i < rows.length; i++) {
-            rows[i] = state[i].slice(i).concat(state[i].slice(0,i));
+            rows[i] = state[i].slice(i).concat(state[i].slice(0, i));
         }
         return rows;
     };
@@ -332,11 +330,11 @@
      */
     Aes.formState = function(byteBlock) {
         var nWords = Aes.blockSize / 4;
-        var state = [[],[],[],[]];
+        var state = [[], [], [], []];
         var i, j;
         for (i = 0; i < nWords; i++) {
             for(j = 0; j < 4; j++) {
-                state[j][i] = byteBlock[i * 4 + j];
+                state[j][i] = byteBlock[(i * 4) + j];
             }
         }
         return state;
@@ -350,9 +348,9 @@
     Aes.getBytes = function(state) {
         var i, j, len;
         var bytes = [];
-        for (i = 0, len=state.length; i < len; i++) {
+        for (i = 0, len = state.length; i < len; i++) {
             for(j = 0; j < 4; j++) {
-                bytes[i * 4 + j] = state[j][i];
+                bytes[(i * 4) + j] = state[j][i];
             }
         }
         return bytes;
@@ -369,8 +367,8 @@
         var row, col, nByte, curByte;
         var TBox = Aes.TBoxes[round];
         for (row = 0; row < 4; row++) {
-            for (col = 0; col < 4; col++ ) {
-                nByte = row * 4 + col;
+            for (col = 0; col < 4; col++) {
+                nByte = (row * 4) + col;
                 curByte = state[row][col];
                 state[row][col] = TBox[nByte][curByte];
             }
@@ -411,7 +409,7 @@
                 newColumn = Aes.xorWords(newColumn, TyTable[curByte]);
             }
             // Arrange it in the state
-            for (row = 0; row < 4; row++ ) {
+            for (row = 0; row < 4; row++) {
                 state[row][col] = newColumn[row];
             }
         }

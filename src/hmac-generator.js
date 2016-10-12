@@ -1,9 +1,10 @@
-(function (){
+(function() {
     'use strict';
 
     var fs = require('fs'),
         esprima = require('esprima'),
-        escodegen = require('escodegen');
+        escodegen = require('escodegen'),
+        path = require('path');
 
     var sha256 = {}, hmac = {};
 
@@ -31,18 +32,20 @@
             0x1f83d9ab,
             0x5be0cd19
         ];
-        var l = msg.length/4 + 2;
-        var N = Math.ceil(l/16);
+        var l = (msg.length / 4) + 2;
+        var N = Math.ceil(l / 16);
         var M = [];
         for (i = 0; i < N; i++) {
             M[i] = [];
             for (j = 0; j < 16; j++) {
-                M[i][j] = (msg.charCodeAt(i*64 + j*4) << 24) | (msg.charCodeAt(i*64 + j*4 + 1) << 16) |
-                          (msg.charCodeAt(i*64 + j*4 + 2) << 8) | (msg.charCodeAt(i*64 + j*4 + 3));
+                M[i][j] = (msg.charCodeAt((i * 64) + (j * 4)) << 24) | (msg.charCodeAt((i * 64) + (j * 4) + 1) << 16) |
+                          (msg.charCodeAt((i * 64) + (j * 4) + 2) << 8) | (msg.charCodeAt((i * 64) + (j * 4) + 3));
             }
         }
-        M[N-1][14] = ((msg.length-1)*8) / Math.pow(2, 32); M[N-1][14] = Math.floor(M[N-1][14]);
-        M[N-1][15] = ((msg.length-1)*8) & 0xffffffff;
+        M[N - 1][14] = ((msg.length - 1) * 8) / Math.pow(2, 32);
+        M[N - 1][14] = Math.floor(M[N - 1][14]);
+        M[N - 1][15] = ((msg.length - 1) * 8) & 0xffffffff;
+        
         var W = [];
         var a, b, c, d, e, f, g, h;
         for (i = 0; i < N; i++) {
@@ -50,12 +53,21 @@
                 W[t] = M[i][t];
             }
             for (t = 16; t < 64; t++) {
-                W[t] = (sha256.σ1(W[t-2]) + W[t-7] + sha256.σ0(W[t-15]) + W[t-16]) & 0xffffffff;
+                W[t] = (sha256.σ1(W[t - 2]) + W[t - 7] + sha256.σ0(W[t - 15]) + W[t - 16]) & 0xffffffff;
             }
-            a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
+            
+            a = H[0];
+            b = H[1];
+            c = H[2];
+            d = H[3];
+            e = H[4];
+            f = H[5];
+            g = H[6];
+            h = H[7];
+
             for (t = 0; t < 64; t++) {
-                T1 = h + sha256.Σ1(e) + sha256.Ch(e, f, g) + sha256.K[t] + W[t];
-                T2 = sha256.Σ0(a) + sha256.Maj(a, b, c);
+                T1 = h + sha256.s1(e) + sha256.ch(e, f, g) + sha256.K[t] + W[t];
+                T2 = sha256.s0(a) + sha256.maj(a, b, c);
                 h = g;
                 g = f;
                 f = e;
@@ -66,20 +78,20 @@
                 a = (T1 + T2) & 0xffffffff;
             }
 
-            H[0] = (H[0]+a) & 0xffffffff;
-            H[1] = (H[1]+b) & 0xffffffff;
-            H[2] = (H[2]+c) & 0xffffffff;
-            H[3] = (H[3]+d) & 0xffffffff;
-            H[4] = (H[4]+e) & 0xffffffff;
-            H[5] = (H[5]+f) & 0xffffffff;
-            H[6] = (H[6]+g) & 0xffffffff;
-            H[7] = (H[7]+h) & 0xffffffff;
+            H[0] = (H[0] + a) & 0xffffffff;
+            H[1] = (H[1] + b) & 0xffffffff;
+            H[2] = (H[2] + c) & 0xffffffff;
+            H[3] = (H[3] + d) & 0xffffffff;
+            H[4] = (H[4] + e) & 0xffffffff;
+            H[5] = (H[5] + f) & 0xffffffff;
+            H[6] = (H[6] + g) & 0xffffffff;
+            H[7] = (H[7] + h) & 0xffffffff;
         }
         return sha256.toHexStr(H[0]) + sha256.toHexStr(H[1]) + sha256.toHexStr(H[2]) + sha256.toHexStr(H[3]) +
                sha256.toHexStr(H[4]) + sha256.toHexStr(H[5]) + sha256.toHexStr(H[6]) + sha256.toHexStr(H[7]);
     };
 
-    sha256.init_hash = function(msg) {
+    sha256.initHash = function(msg) {
         var i, j, t, T1, T2;
         var H = [
             0x6a09e667,
@@ -91,14 +103,14 @@
             0x1f83d9ab,
             0x5be0cd19
         ];
-        var l = msg.length/4;
-        var N = Math.ceil(l/16);
+        var l = msg.length / 4;
+        var N = Math.ceil(l / 16);
         var M = [];
-        for (i=0; i<N; i++) {
+        for (i = 0; i < N; i++) {
             M[i] = [];
             for (j = 0; j < 16; j++) {
-                M[i][j] = (msg.charCodeAt(i*64 + j*4) << 24) | (msg.charCodeAt(i*64 + j*4 + 1) << 16) |
-                          (msg.charCodeAt(i*64 + j*4 + 2) << 8) | (msg.charCodeAt(i*64 + j*4 + 3));
+                M[i][j] = (msg.charCodeAt((i * 64) + (j * 4)) << 24) | (msg.charCodeAt((i * 64) + (j * 4) + 1) << 16) |
+                          (msg.charCodeAt((i * 64) + (j * 4) + 2) << 8) | (msg.charCodeAt((i * 64) + (j * 4) + 3));
             }
         }
         var W = [];
@@ -108,12 +120,20 @@
                 W[t] = M[i][t];
             }
             for (t = 16; t < 64; t++) {
-                W[t] = (sha256.σ1(W[t-2]) + W[t-7] + sha256.σ0(W[t-15]) + W[t-16]) & 0xffffffff;
+                W[t] = (sha256.σ1(W[t - 2]) + W[t - 7] + sha256.σ0(W[t - 15]) + W[t - 16]) & 0xffffffff;
             }
-            a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
+            a = H[0];
+            b = H[1];
+            c = H[2];
+            d = H[3];
+            e = H[4];
+            f = H[5];
+            g = H[6];
+            h = H[7];
+
             for (t = 0; t < 64; t++) {
-                T1 = h + sha256.Σ1(e) + sha256.Ch(e, f, g) + sha256.K[t] + W[t];
-                T2 = sha256.Σ0(a) + sha256.Maj(a, b, c);
+                T1 = h + sha256.s1(e) + sha256.ch(e, f, g) + sha256.K[t] + W[t];
+                T2 = sha256.s0(a) + sha256.maj(a, b, c);
                 h = g;
                 g = f;
                 f = e;
@@ -123,50 +143,50 @@
                 b = a;
                 a = (T1 + T2) & 0xffffffff;
             }
-            H[0] = (H[0]+a) & 0xffffffff;
-            H[1] = (H[1]+b) & 0xffffffff;
-            H[2] = (H[2]+c) & 0xffffffff;
-            H[3] = (H[3]+d) & 0xffffffff;
-            H[4] = (H[4]+e) & 0xffffffff;
-            H[5] = (H[5]+f) & 0xffffffff;
-            H[6] = (H[6]+g) & 0xffffffff;
-            H[7] = (H[7]+h) & 0xffffffff;
+            H[0] = (H[0] + a) & 0xffffffff;
+            H[1] = (H[1] + b) & 0xffffffff;
+            H[2] = (H[2] + c) & 0xffffffff;
+            H[3] = (H[3] + d) & 0xffffffff;
+            H[4] = (H[4] + e) & 0xffffffff;
+            H[5] = (H[5] + f) & 0xffffffff;
+            H[6] = (H[6] + g) & 0xffffffff;
+            H[7] = (H[7] + h) & 0xffffffff;
         }
         return H;
     };
 
-    sha256.ROTR = function(n, x) {
-        return (x >>> n) | (x << (32-n));
+    sha256.rotr = function(n, x) {
+        return (x >>> n) | (x << (32 - n));
     };
 
-    sha256.Σ0  = function(x) {
-        return sha256.ROTR(2,  x) ^ sha256.ROTR(13, x) ^ sha256.ROTR(22, x);
+    sha256.s0  = function(x) {
+        return sha256.rotr(2,  x) ^ sha256.rotr(13, x) ^ sha256.rotr(22, x);
     };
 
-    sha256.Σ1  = function(x) {
-        return sha256.ROTR(6,  x) ^ sha256.ROTR(11, x) ^ sha256.ROTR(25, x);
+    sha256.s1  = function(x) {
+        return sha256.rotr(6,  x) ^ sha256.rotr(11, x) ^ sha256.rotr(25, x);
     };
 
     sha256.σ0  = function(x) {
-        return sha256.ROTR(7,  x) ^ sha256.ROTR(18, x) ^ (x>>>3);
+        return sha256.rotr(7,  x) ^ sha256.rotr(18, x) ^ (x >>> 3);
     };
 
     sha256.σ1  = function(x) {
-        return sha256.ROTR(17, x) ^ sha256.ROTR(19, x) ^ (x>>>10);
+        return sha256.rotr(17, x) ^ sha256.rotr(19, x) ^ (x >>> 10);
     };
 
-    sha256.Ch  = function(x, y, z) {
+    sha256.ch  = function(x, y, z) {
         return (x & y) ^ (~x & z);
     };
 
-    sha256.Maj = function(x, y, z) {
+    sha256.maj = function(x, y, z) {
         return (x & y) ^ (x & z) ^ (y & z);
     };
 
     sha256.toHexStr = function(n) {
         var s = '', v;
         for (var i = 7; i >= 0; i--) {
-            v = (n>>>(i*4)) & 0xf;
+            v = (n >>> (i * 4)) & 0xf;
             s += v.toString(16);
         }
         return s;
@@ -175,7 +195,7 @@
     hmac.xor = function(a, b) {
         var i, blocksize = 64;
         var s = [];
-        for(i = 0; i < blocksize; i++){
+        for(i = 0; i < blocksize; i++) {
             s.push(a[i] ^ b);
         }
         return s;
@@ -184,8 +204,8 @@
     hmac.prepareKeyBlock = function(key) {
         var state = [];
         var blocksize = 64;
-        var o_key_pad = [];
-        var i_key_pad = [];
+        var oKeyPad = [];
+        var iKeyPad = [];
         var preparedKey = new Buffer(blocksize);
         preparedKey.fill(0);
 
@@ -194,17 +214,17 @@
         }
         key.copy(preparedKey);
 
-        o_key_pad = new Buffer(hmac.xor( preparedKey, 0x5c ));
-        i_key_pad = new Buffer(hmac.xor( preparedKey, 0x36 ));
+        oKeyPad = new Buffer(hmac.xor(preparedKey, 0x5c));
+        iKeyPad = new Buffer(hmac.xor(preparedKey, 0x36));
 
-        state[1] = sha256.init_hash(o_key_pad.toString('binary'));
-        state[0] = sha256.init_hash(i_key_pad.toString('binary'));
+        state[1] = sha256.initHash(oKeyPad.toString('binary'));
+        state[0] = sha256.initHash(iKeyPad.toString('binary'));
 
         return state;
     };
 
     // Generate whitebox-hmac code and write it in a file
-    hmac.generateAlgorithm = function(key, options){
+    hmac.generateAlgorithm = function(key, options) {
         var code, mixing, tree, state, body, i, len, encoding;
         encoding = options.encoding;
 
@@ -215,7 +235,7 @@
         }
 
         state = hmac.prepareKeyBlock(key);
-        code = fs.readFileSync(__dirname + '/fixtures/hmac-template.js', 'utf8');
+        code = fs.readFileSync(path.join(__dirname, '/fixtures/hmac-template.js'), 'utf8');
         tree = esprima.parse(code);
         // Get module's body
         body = tree.body[0].expression.callee.body.body;
@@ -224,7 +244,7 @@
         // Get parse tree for added code
         mixing =  esprima.parse(
             'var hmac = {};\n' +
-            'hmac.states = ' + JSON.stringify(state) +';'
+            'hmac.states = ' + JSON.stringify(state) + ';'
         );
         // Add Aes declarations to tree
         for(i = 0, len = mixing.body.length; i < len; i++) {

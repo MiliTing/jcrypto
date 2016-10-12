@@ -17,31 +17,31 @@ function basicEncryptionTest(aes, text) {
 }
 
 module.exports = {
-    'Base AES, english text' : function(test) {
+    'Base AES, english text': function(test) {
         var text = 'You can do anything, but not everything.';
         test.expect(1);
         test.strictEqual(basicEncryptionTest(bAes, text), text);
         test.done();
     },
-    'Base AES, russian text' : function(test) {
+    'Base AES, russian text': function(test) {
         var text = 'Быть энтузиасткой сделалось ее общественным положением, и иногда, когда ей даже того не хотелось, она, чтобы не обмануть ожиданий людей, знавших ее, делалась энтузиасткой.';
         test.expect(1);
         test.strictEqual(basicEncryptionTest(bAes, text), text);
         test.done();
     },
-    'Base AES, empty text' : function(test) {
+    'Base AES, empty text': function(test) {
         var text = '';
         test.expect(1);
         test.strictEqual(basicEncryptionTest(bAes, text), text);
         test.done();
     },
-    'Base AES, some special characters' : function(test) {
+    'Base AES, some special characters': function(test) {
         var text = '!@#$%^&*()_+';
         test.expect(1);
         test.strictEqual(basicEncryptionTest(bAes, text), text);
         test.done();
     },
-    'Base AES, NIST SP800-38a' : function(test) {
+    'Base AES, NIST SP800-38a': function(test) {
         /*
          * key:            2b7e151628aed2a6abf7158809cf4f3c
          * Init. Counter:  f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
@@ -53,26 +53,26 @@ module.exports = {
         test.strictEqual(bAes.encrypt('6bc1bee22e409f96e93d7e117393172a', {counter: 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', encoding: 'hex'}).substring(32), '874d6191b620e3261bef6864990db6ce');
         test.done();
     },
-    'Base AES, Test vector 1' : function(test) {
+    'Base AES, Test vector 1': function(test) {
         // http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors#aes-crt-128
         test.expect(1);
         test.strictEqual(bAes.encrypt('ae2d8a571e03ac9c9eb76fac45af8e51', {counter: 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', encoding: 'hex'}).substring(32), '42a155248663d02c6c6579d9af312fb5');
         test.done();
     },
-    'Base AES, Test vector 2' : function(test) {
+    'Base AES, Test vector 2': function(test) {
         // http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors#aes-crt-128
         test.expect(1);
         test.strictEqual(bAes.encrypt('30c81c46a35ce411e5fbc1191a0a52ef', {counter: 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', encoding: 'hex'}).substring(32), 'dc44c3353b3c98a11729d76cf094f30b');
         test.done();
     },
-    'Base AES, Test vector 3' : function(test) {
+    'Base AES, Test vector 3': function(test) {
         // http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors#aes-crt-128
         test.expect(1);
         test.strictEqual(bAes.encrypt('f69f2445df4f9b17ad2b417be66c3710', {counter: 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', encoding: 'hex'}).substring(32), '1a13fb36472fe7a75ff9570e0cf296f4');
         test.done();
     },
-    'RFC 3686, Test vector 1' : function(test) {
-        //https://tools.ietf.org/html/rfc3686#page-9
+    'RFC 3686, Test vector 1': function(test) {
+        // https://tools.ietf.org/html/rfc3686#page-9
         var key = 'ae6852f8121067cc4bf7a5765577f39e';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-rfc3686-1.js'});
         var rfcAes = require('./fixtures/wbaes-rfc3686-1.js');
@@ -80,8 +80,8 @@ module.exports = {
         test.strictEqual(rfcAes.encrypt('53696e676c6520626c6f636b206d7367', {counter: '00000030000000000000000000000001', encoding: 'hex'}).substring(32), 'e4095d4fb7a7b3792d6175a3261311b8');
         test.done();
     },
-    'RFC 3686, Test vector 2' : function(test) {
-        //https://tools.ietf.org/html/rfc3686#page-9
+    'RFC 3686, Test vector 2': function(test) {
+        // https://tools.ietf.org/html/rfc3686#page-9
         var key = '7e24067817fae0d743d6ce1f32539163';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-rfc3686-2.js'});
         var rfcAes = require('./fixtures/wbaes-rfc3686-2.js');
@@ -89,8 +89,8 @@ module.exports = {
         test.strictEqual(rfcAes.encrypt('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f', {counter: '006cb6dbc0543b59da48d90b00000001', encoding: 'hex'}).substring(32), '5104a106168a72d9790d41ee8edad388eb2e1efc46da57c8fce630df9141be28');
         test.done();
     },
-    'RFC 3686, Test vector 3' : function(test) {
-        //https://tools.ietf.org/html/rfc3686#page-9
+    'RFC 3686, Test vector 3': function(test) {
+        // https://tools.ietf.org/html/rfc3686#page-9
         var key = '7691be035e5020a8ac6e618529f9a0dc';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-rfc3686-3.js'});
         var rfcAes = require('./fixtures/wbaes-rfc3686-3.js');
@@ -98,8 +98,8 @@ module.exports = {
         test.strictEqual(rfcAes.encrypt('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20212223', {counter: '00e0017b27777f3f4a1786f000000001', encoding: 'hex'}).substring(32), 'c1cf48a89f2ffdd9cf4652e9efdb72d74540a42bde6d7836d59a5ceaaef3105325b2072f');
         test.done();
     },
-    'MBS AES-CTR, Test Vector 1' : function(test) {
-        //http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
+    'MBS AES-CTR, Test Vector 1': function(test) {
+        // http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
         var key = '0000000000000000ffffffffffffffff';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-mbs-1.js'});
         var mbsAes = require('./fixtures/wbaes-mbs-1.js');
@@ -107,8 +107,8 @@ module.exports = {
         test.strictEqual(mbsAes.encrypt('d865c9cdea3356c5488e7ba15e84f4eba3b8259c053f24ce2967221c003884d79d4ca4877ffa4bc687c667e5495bcfec12f4871732aae45a110676113df9e7da', {counter: '22221a7022221a7022221a7022221a70', encoding: 'hex'}).substring(32), 'b672f2af6acc20aeee1ad814128c318b955bbe805b389249897600f5207454327d6d0fb4ac0a94f37ca09e45053398fea89c200ad358126d9e89a405265c96e7');
         test.done();
     },
-    'MBS AES-CTR, Test Vector 2' : function(test) {
-        //http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
+    'MBS AES-CTR, Test Vector 2': function(test) {
+        // http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
         var key = '0000000000000000ffffffffffffffff';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-mbs-2.js'});
         var mbsAes = require('./fixtures/wbaes-mbs-2.js');
@@ -116,8 +116,8 @@ module.exports = {
         test.strictEqual(mbsAes.encrypt('8b61c384ab890b71efefb949bea45bb12b71e2d5553be55ab0f597a9dc71ed66d1b0ea7c38f4ec26e2a56f9f48ca4f733a31478f6b2ce91b217fc3fdf0b063c05f4c3c963f28bc21cc2bbf14f40e862e3ecdbca9f8a4c318238615123577d293c20e290035e421000edf1302ed992f2a65ead25c8e9574b01a88c24eff94e1c0a20ac0d6ede0d5fbbfe8fcab802ad5e414a740a23bb452553c13a33aa783f9488cb91d7998f27457da7001599ad63cad7c7c4fb72fa00b6ab3ada459309ca1bc55be34ecb0a842891743e1b0181d5d9498ab4ac74a5531fc01d4553170f6ecc4b320b063c7f2ebdd35cc8d4de8e9e080942a47de7f77da7f4b2fb0bb249b7fd7', {counter: '5cb44a055cb44a055cb44a055cb44a05', encoding: 'hex'}).substring(32), '8b347e8350f973011c93348b51b44387b56bb872b34578bdc61ffb461698f80bcdcdb3d22ab117c39df54958659eb57e567ab64af9460e6a3304faa8a1a2014ccdb3d87c49911b6bd59c87b46dbdee8d360c4ff767386e2aeb7c08544e12167439db143871f5544904f60e4acc7730eeffa997bff223ba2cc7daaa5a0d059d0c5aee9dd870f2dfd179c1a26d65fcbb59adf23d7f8f4ca8f4cef598bf1fc45cb7e882d65a28778d21b09794e892c4a52a78fecd0b5ca0355b7a444ac404bebb34b6cb74e4140808d80b876b10fa084a6c778b6ba1009e3f1bb0e76ffa066b2d47f47eabcf69143bf99792954442ee008e689c0f96c47538cc6a0f1dafd624571c');
         test.done();
     },
-    'MBS AES-CTR, Test Vector 3' : function(test) {
-        //http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
+    'MBS AES-CTR, Test Vector 3': function(test) {
+        // http://www.ieee802.org/16/tge/contrib/C80216e-04_357.pdf
         var key = '0000000000000000ffffffffffffffff';
         generateAes(key, {encoding: 'hex', file: 'test/fixtures/wbaes-mbs-3.js'});
         var mbsAes = require('./fixtures/wbaes-mbs-3.js');

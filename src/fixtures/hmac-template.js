@@ -1,4 +1,4 @@
-(function (){
+(function() {
     'use strict';
     var hmac = {};
     hmac.blockSize = 16;
@@ -10,7 +10,7 @@
      * @returns {string} Hash value.
      */
     hmac.hash = function(message, options) {
-        if (typeof(options) !== 'object') {
+        if(typeof (options) !== 'object') {
             options = {};
         }
         // Decode message if necessary
@@ -55,29 +55,29 @@
         // length (in 32-bit integers) of padded msg
         // + 2 integers of appended length
         // + hmac.blockSize integers of already hashed HMAC key block
-        var msgLen = msg.length / 4 + 2;
+        var msgLen = (msg.length / 4) + 2;
         // number of hmac.blockSize-integer-blocks required to hold l ints
         var nBlocks = Math.ceil(msgLen / hmac.blockSize);
         var M = [];
-        var i,j;
+        var i, j;
         for (i = 0; i < nBlocks; i++) {
             M[i] = [];
             // note running off the end of msg is ok 'cos bitwise ops on NaN return 0
             for (j = 0; j < hmac.blockSize; j++) {
                 // encode 4 chars per integer, big-endian encoding
-                M[i][j] = (msg.charCodeAt(i * 64 + j * 4) << 24)   |
-                          (msg.charCodeAt(i * 64 + j * 4 + 1)<<16) |
-                          (msg.charCodeAt(i * 64 + j * 4 + 2)<<8)  |
-                          (msg.charCodeAt(i * 64 + j * 4 + 3));
+                M[i][j] = (msg.charCodeAt((i * 64) + (j * 4)) << 24)   |
+                          (msg.charCodeAt((i * 64) + (j * 4) + 1) << 16) |
+                          (msg.charCodeAt((i * 64) + (j * 4) + 2) << 8)  |
+                          (msg.charCodeAt((i * 64) + (j * 4) + 3));
             }
         }
         // add length (in bits) into final pair of 32-bit integers (big-endian) [§5.1.1]
         // note: most significant word would be (len-1)*8 >>> 32, but since JS converts
         // bitwise-op args to 32 bits, we need to simulate this by arithmetic operators
-        var byteLen = msg.length + hmac.blockSize * 4 - 1;
-        M[nBlocks-1][hmac.blockSize-2] = (byteLen * 8) / Math.pow(2, 32);
-        M[nBlocks-1][hmac.blockSize-2] = Math.floor(M[nBlocks-1][hmac.blockSize-2]);
-        M[nBlocks-1][hmac.blockSize-1] = (byteLen * 8) & 0xffffffff;
+        var byteLen = msg.length + (hmac.blockSize * 4) - 1;
+        M[nBlocks - 1][hmac.blockSize - 2] = (byteLen * 8) / Math.pow(2, 32);
+        M[nBlocks - 1][hmac.blockSize - 2] = Math.floor(M[nBlocks - 1][hmac.blockSize - 2]);
+        M[nBlocks - 1][hmac.blockSize - 1] = (byteLen * 8) & 0xffffffff;
         return M;
     };
 
@@ -97,19 +97,29 @@
                 W[j] = blocks[i][j];
             }
             for (j = hmac.blockSize; j < 64; j++) {
-                W[j] = (hmac.σ1(W[j-2]) + W[j-7] + hmac.σ0(W[j-15]) + W[j-16]);
+                W[j] = (hmac.σ1(W[j - 2]) + W[j - 7] + hmac.σ0(W[j - 15]) + W[j - 16]);
                 W[j] &= 0xffffffff;
             }
             // 2 - initialise working variables a, b, c, d, e, f, g, h with state values
-            a = state[0]; b = state[1]; c = state[2]; d = state[3];
-            e = state[4]; f = state[5]; g = state[6]; h = state[7];
+            a = state[0];
+            b = state[1];
+            c = state[2];
+            d = state[3];
+            e = state[4];
+            f = state[5];
+            g = state[6];
+            h = state[7];
             // 3 - main loop (note 'addition modulo 2^32')
             for (j = 0; j < 64; j++) {
-                var T1 = h + hmac.Σ1(e) + hmac.Ch(e, f, g)  + hmac.K[j] + W[j];
-                var T2 =     hmac.Σ0(a) + hmac.Maj(a, b, c);
-                h = g; g = f; f = e;
+                var T1 = h + hmac.s1(e) + hmac.ch(e, f, g)  + hmac.K[j] + W[j];
+                var T2 =     hmac.s0(a) + hmac.maj(a, b, c);
+                h = g;
+                g = f;
+                f = e;
                 e = (d + T1) & 0xffffffff;
-                d = c; c = b; b = a;
+                d = c;
+                c = b;
+                b = a;
                 a = (T1 + T2) & 0xffffffff;
             }
             // 4 - compute the new intermediate hash value (note 'addition modulo 2^32')
@@ -128,19 +138,31 @@
     /**
      * Rotates right (circular right shift) value x by n positions [§3.2.4].
      */
-    hmac.ROTR = function(n, x) {
-        return (x >>> n) | (x << (32-n));
+    hmac.rotr = function(n, x) {
+        return (x >>> n) | (x << (32 - n));
     };
 
     /**
      * Logical functions [§4.1.2].
      */
-    hmac.Σ0  = function(x) { return hmac.ROTR(2,  x) ^ hmac.ROTR(13, x) ^ hmac.ROTR(22, x); };
-    hmac.Σ1  = function(x) { return hmac.ROTR(6,  x) ^ hmac.ROTR(11, x) ^ hmac.ROTR(25, x); };
-    hmac.σ0  = function(x) { return hmac.ROTR(7,  x) ^ hmac.ROTR(18, x) ^ (x>>>3);  };
-    hmac.σ1  = function(x) { return hmac.ROTR(17, x) ^ hmac.ROTR(19, x) ^ (x>>>10); };
-    hmac.Ch  = function(x, y, z) { return (x & y) ^ (~x & z); };
-    hmac.Maj = function(x, y, z) { return (x & y) ^ (x & z) ^ (y & z); };
+    hmac.s0  = function(x) {
+        return hmac.rotr(2,  x) ^ hmac.rotr(13, x) ^ hmac.rotr(22, x);
+    };
+    hmac.s1  = function(x) {
+        return hmac.rotr(6,  x) ^ hmac.rotr(11, x) ^ hmac.rotr(25, x);
+    };
+    hmac.σ0  = function(x) {
+        return hmac.rotr(7,  x) ^ hmac.rotr(18, x) ^ (x >>> 3);
+    };
+    hmac.σ1  = function(x) {
+        return hmac.rotr(17, x) ^ hmac.rotr(19, x) ^ (x >>> 10);
+    };
+    hmac.ch  = function(x, y, z) {
+        return (x & y) ^ (~x & z);
+    };
+    hmac.maj = function(x, y, z) {
+        return (x & y) ^ (x & z) ^ (y & z);
+    };
 
     /**
       * Constants [§4.2.2]
@@ -175,28 +197,27 @@
                               0x80 | (charcode & 0x3f));
                 } else if (charcode < 0xd800 || charcode >= 0xe000) {
                     utf8.push(0xe0 | (charcode >> 12),
-                              0x80 | ((charcode>>6) & 0x3f),
+                              0x80 | ((charcode >> 6) & 0x3f),
                               0x80 | (charcode & 0x3f));
                 } else {
                     i++;
                     // UTF-16 encodes 0x10000-0x10FFFF by
                     // subtracting 0x10000 and splitting the
                     // 20 bits of 0x0-0xFFFFF into two halves
-                    charcode = 0x10000 + (((charcode & 0x3ff)<<10)
-                              | (str.charCodeAt(i) & 0x3ff));
-                    utf8.push(0xf0 | (charcode >>18),
-                              0x80 | ((charcode>>12) & 0x3f),
-                              0x80 | ((charcode>>6) & 0x3f),
+                    charcode = 0x10000 + (((charcode & 0x3ff) << 10) |
+                                         (str.charCodeAt(i) & 0x3ff));
+                    utf8.push(0xf0 | (charcode >> 18),
+                              0x80 | ((charcode >> 12) & 0x3f),
+                              0x80 | ((charcode >> 6) & 0x3f),
                               0x80 | (charcode & 0x3f));
                 }
             }
             // Finally pack it to string
-            for (i = 0, utf8Len = utf8.length; i < utf8Len; i++ ) {
+            for (i = 0, utf8Len = utf8.length; i < utf8Len; i++) {
                 res += String.fromCharCode(utf8[i]);
             }
             return res;
-        }
-        catch(e) {
+        } catch(e) {
             throw new Error('Error on UTF-8 encode');
         }
     };
@@ -207,7 +228,7 @@
     hmac.i2b = function(n) {
         var bytes = [], i;
         for (i = 3; i >= 0; i--) {
-            bytes[3-i] = (n>>>(i*8)) & 0xff;
+            bytes[3 - i] = (n >>> (i * 8)) & 0xff;
         }
         return bytes;
     };
@@ -234,7 +255,7 @@
         for (i = 0, arrLen = numArr.length; i < arrLen; i++) {
             block = hmac.i2b(numArr[i]);
             for (j = 0, bLen = block.length; j < bLen; j++) {
-                str += (block[j] < 16 ? '0': '') + block[j].toString(16);
+                str += (block[j] < 16 ? '0' : '') + block[j].toString(16);
             }
         }
         return str;
@@ -256,7 +277,7 @@
         var hexCodes = hexStr.match(/[0-9a-f]{2}/gi);
         var len = hexCodes.length;
         for (i = 0; i < len; i++) {
-            res += String.fromCharCode(parseInt(hexCodes[i],16));
+            res += String.fromCharCode(parseInt(hexCodes[i], 16));
         }
         return res;
     };

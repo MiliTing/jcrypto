@@ -8,6 +8,10 @@ These are an experimental white-box cryptography tools for JavaScript obfuscatio
 
 ## Installation
 ```
+npm install jcrypto
+```
+or
+```
 git clone https://github.com/tsu-iscd/jcrypto.git
 cd jcrypto
 npm install

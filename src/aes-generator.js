@@ -252,7 +252,7 @@
         '   } else if (typeof module === \'object\' && module.exports) {\n' +
         '       module.exports = factory();\n' +
         '   } else {\n' +
-        '      root.returnExports = factory();\n' +
+        '      root.aes = factory();\n' +
         '   }\n' +
         '}(this, function () {\n' +
         funcString + '\n' +

@@ -18,7 +18,6 @@ function showUsage() {
     console.log('   -e <encoding>, --encoding=<encoding>     Key characters encoding. Posible values: hex.');
     console.log('   -o <file>, --output=<file>               Output <file>.');
     console.log();
-    throw new Error('Bad arguments');
 }
 
 var params = {

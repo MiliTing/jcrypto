@@ -26,7 +26,7 @@ var generateAes = require('jcrypto');
 var fs = require('fs');
 var file = 'aes.js';
 
-var code = generateAes(key, {encoding : 'hex'});
+var code = generateAes(key, {encoding: 'hex'});
 fs.writeFileSync(file, code);
 ```
 

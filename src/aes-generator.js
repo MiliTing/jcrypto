@@ -4,6 +4,7 @@
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen'),
+        esformatter = require('esformatter'),
         path = require('path');
 
     var aes = {};
@@ -243,9 +244,27 @@
         return TyTable;
     };
 
+    aes.wrapper = function(funcString, returnValue) {
+        var code =
+        '(function (root, factory) {\n' +
+        '   if (typeof define === \'function\' && define.amd) {\n' +
+        '        define([], factory);\n' +
+        '   } else if (typeof module === \'object\' && module.exports) {\n' +
+        '       module.exports = factory();\n' +
+        '   } else {\n' +
+        '      root.returnExports = factory();\n' +
+        '   }\n' +
+        '}(this, function () {\n' +
+        funcString + '\n' +
+        'return ' + returnValue + ';\n}));\n';
+
+        var options = {indent: {value: '    '}};
+        return esformatter.format(code, options);
+    };
+
     // Generate whitebox-aes code and write it in a file
     aes.generateAlgorithm = function(key, options) {
-        var code, mixing, tree, body, TBoxes, TyTables, i, len, encoding;
+        var code, aesCode, mixing, tree, body, TBoxes, TyTables, i, len, encoding;
         encoding = options.encoding;
         if ((key.length !== 16 && !encoding) ||
                 (key.length !== 32 && encoding)) {
@@ -262,7 +281,7 @@
         code = fs.readFileSync(path.join(__dirname, '/fixtures/aes-template.js'), 'utf8');
         tree = esprima.parse(code);
         // Get module's body
-        body = tree.body[0].expression.callee.body.body;
+        body = tree.body;
         // Delete original Aes declaration
         body.splice(1, 1);
         // Get parse tree for added code
@@ -274,11 +293,13 @@
             'Aes.TyTables = JSON.parse(preTyTables);\n'
         );
         // Add Aes declarations to tree
+        
         for(i = 0, len = mixing.body.length; i < len; i++) {
             body.splice(1 + i, 0, mixing.body[i]);
         }
-        return escodegen.generate(tree);
+        
+        aesCode = escodegen.generate(tree);
+        return  aes.wrapper(aesCode, '{encrypt: Aes.encrypt, decrypt: Aes.decrypt}');
     };
-
     module.exports = aes.generateAlgorithm;
 }());

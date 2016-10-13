@@ -4,6 +4,7 @@
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen'),
+        esformatter = require('esformatter'),
         path = require('path');
 
     var sha256 = {}, hmac = {};
@@ -223,9 +224,28 @@
         return state;
     };
 
+    // UMD (Universal Module Definition)
+    hmac.wrapper = function(funcString, returnValue) {
+        var code =
+        '(function (root, factory) {\n' +
+        '   if (typeof define === \'function\' && define.amd) {\n' +
+        '        define([], factory);\n' +
+        '   } else if (typeof module === \'object\' && module.exports) {\n' +
+        '       module.exports = factory();\n' +
+        '   } else {\n' +
+        '      root.returnExports = factory();\n' +
+        '   }\n' +
+        '}(this, function () {\n' +
+        funcString + '\n' +
+        'return ' + returnValue + ';\n}));\n';
+
+        var options = {indent: {value: '    '}};
+        return esformatter.format(code, options);
+    };
+
     // Generate whitebox-hmac code and write it in a file
     hmac.generateAlgorithm = function(key, options) {
-        var code, mixing, tree, state, body, i, len, encoding;
+        var code, hmacCode, mixing, tree, state, body, i, len, encoding;
         encoding = options.encoding;
 
         if (encoding === 'hex') {
@@ -238,7 +258,7 @@
         code = fs.readFileSync(path.join(__dirname, '/fixtures/hmac-template.js'), 'utf8');
         tree = esprima.parse(code);
         // Get module's body
-        body = tree.body[0].expression.callee.body.body;
+        body = tree.body;
         // Delete original Aes declaration
         body.splice(1, 1);
         // Get parse tree for added code
@@ -250,7 +270,10 @@
         for(i = 0, len = mixing.body.length; i < len; i++) {
             body.splice(1 + i, 0, mixing.body[i]);
         }
-        return escodegen.generate(tree);
+
+        hmacCode = escodegen.generate(tree);
+        return hmac.wrapper(hmacCode, 'hmac.hash');
+
     };
 
     module.exports = hmac.generateAlgorithm;

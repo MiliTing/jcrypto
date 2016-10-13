@@ -19,7 +19,7 @@ function generateHmac(k, options) {
 /* Generate fixtures for the following tests */
 var key = '000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F60616263';
 generateHmac(key, {encoding: 'hex', file: 'test/fixtures/hmac-jssha.js'});
-var hmac = require('./fixtures/hmac-jssha.js');
+var hash = require('./fixtures/hmac-jssha.js');
 
 module.exports = {
     // https://tools.ietf.org/html/rfc4231
@@ -30,9 +30,9 @@ module.exports = {
             hash: 'b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-1.js'});
-        var hmac = require('./fixtures/hmac-rfc-1.js');
+        var hash = require('./fixtures/hmac-rfc-1.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 2': function(test) {
@@ -42,9 +42,9 @@ module.exports = {
             hash: '5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-2.js'});
-        var hmac = require('./fixtures/hmac-rfc-2.js');
+        var hash = require('./fixtures/hmac-rfc-2.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 3': function(test) {
@@ -54,9 +54,9 @@ module.exports = {
             hash: '773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-3.js'});
-        var hmac = require('./fixtures/hmac-rfc-3.js');
+        var hash = require('./fixtures/hmac-rfc-3.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 4': function(test) {
@@ -66,9 +66,9 @@ module.exports = {
             hash: '82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff46729665b'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-4.js'});
-        var hmac = require('./fixtures/hmac-rfc-4.js');
+        var hash = require('./fixtures/hmac-rfc-4.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 5': function(test) {
@@ -78,9 +78,9 @@ module.exports = {
             hash: 'a3b6167473100ee06e0c796c2955552b'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-5.js'});
-        var hmac = require('./fixtures/hmac-rfc-5.js');
+        var hash = require('./fixtures/hmac-rfc-5.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 6': function(test) {
@@ -90,9 +90,9 @@ module.exports = {
             hash: '60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-6.js'});
-        var hmac = require('./fixtures/hmac-rfc-6.js');
+        var hash = require('./fixtures/hmac-rfc-6.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'RFC 4231 Test case 7': function(test) {
@@ -102,9 +102,9 @@ module.exports = {
             hash: '9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f51535c3a35e2'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-rfc-7.js'});
-        var hmac = require('./fixtures/hmac-rfc-7.js');
+        var hash = require('./fixtures/hmac-rfc-7.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     // http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/decoders/decod_shared/lib/polarssl/tests/suites/test_suite_hmac_shax.data
@@ -115,9 +115,9 @@ module.exports = {
             hash: 'c6f0dde266cb4a26d41e8259d33499cc'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-nist-1.js'});
-        var hmac = require('./fixtures/hmac-nist-1.js');
+        var hash = require('./fixtures/hmac-nist-1.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
         test.done();
     },
     'HMAC-SHA-256 Test Vector NIST CAVS #2': function(test) {
@@ -127,9 +127,9 @@ module.exports = {
             hash: '31588e241b015319a5ab8c4527296498'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-nist-2.js'});
-        var hmac = require('./fixtures/hmac-nist-2.js');
+        var hash = require('./fixtures/hmac-nist-2.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
         test.done();
     },
     'HMAC-SHA-256 Test Vector NIST CAVS #3': function(test) {
@@ -139,9 +139,9 @@ module.exports = {
             hash: '1c98c94a32bec9f253c21070f82f8438'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-nist-3.js'});
-        var hmac = require('./fixtures/hmac-nist-3.js');
+        var hash = require('./fixtures/hmac-nist-3.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 32), testCase.hash);
         test.done();
     },
     'HMAC-SHA-256 Test Vector NIST CAVS #4': function(test) {
@@ -151,9 +151,9 @@ module.exports = {
             hash: '60b90383286533d309de46593e6ce39fc51fb00a8d88278c'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-nist-4.js'});
-        var hmac = require('./fixtures/hmac-nist-4.js');
+        var hash = require('./fixtures/hmac-nist-4.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 48), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 48), testCase.hash);
         test.done();
     },
     'HMAC-SHA-256 Test Vector NIST CAVS #5': function(test) {
@@ -163,9 +163,9 @@ module.exports = {
             hash: '509581f6816df4b8cc9f2cf42b7cc6e6a5a1e375a16f2412'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-nist-5.js'});
-        var hmac = require('./fixtures/hmac-nist-5.js');
+        var hash = require('./fixtures/hmac-nist-5.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}).substring(0, 48), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}).substring(0, 48), testCase.hash);
         test.done();
     },
     // https://github.com/Caligatio/jsSHA/blob/master/test/test.html
@@ -176,9 +176,9 @@ module.exports = {
             hash: '8bb9a1db9806f20df7f77b82138c7914d174d59e13dc4d0169c9057b133e1d62'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-jssha-1.js'});
-        var hmac = require('./fixtures/hmac-jssha-1.js');
+        var hash = require('./fixtures/hmac-jssha-1.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA Original Test Vector #2': function(test) {
@@ -188,9 +188,9 @@ module.exports = {
             hash: 'a28cf43130ee696a98f14a37678b56bcfcbdd9e5cf69717fecf5480f0ebdf790'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-jssha-2.js'});
-        var hmac = require('./fixtures/hmac-jssha-2.js');
+        var hash = require('./fixtures/hmac-jssha-2.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA Original Test Vector #3': function(test) {
@@ -200,9 +200,9 @@ module.exports = {
             hash: 'bdccb6c72ddeadb500ae768386cb38cc41c63dbb0878ddb9c7a38a431b78378d'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-jssha-3.js'});
-        var hmac = require('./fixtures/hmac-jssha-3.js');
+        var hash = require('./fixtures/hmac-jssha-3.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     /*
@@ -216,7 +216,7 @@ module.exports = {
             hash: 'd3a5bd70c0b5394e7eb7b08662b7b8d8e77501edfbd5add0a4180aa0255ac523'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA-based Test #2': function(test) {
@@ -225,7 +225,7 @@ module.exports = {
             hash: 'd3a143104274b6be6e00887521a81cd7eb6171fddae3fd80742224e551300c11'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA-based Test #3': function(test) {
@@ -234,7 +234,7 @@ module.exports = {
             hash: 'a20b9e9291bb27c478e23d12eede7b0989aee0a5966861a511b907438db77c25'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA-based Test #4': function(test) {
@@ -243,7 +243,7 @@ module.exports = {
             hash: '05ed99fbee098933228ad56cf07c3e21ee25bac541341eaf4017e299699ffb81'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA-based Test #5': function(test) {
@@ -252,7 +252,7 @@ module.exports = {
             hash: 'd1dac2232921c42f29b6ee7a1bfbc6704b47d415c4cb7c7a945cd5d5460bd762'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'jsSHA-based Test #6': function(test) {
@@ -261,7 +261,7 @@ module.exports = {
             hash: 'ee21393a87909e5945b2fceb33440ca87856094e62f987f3a476f3647e565895'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     // Some custom HMAC tests
@@ -271,7 +271,7 @@ module.exports = {
             hash: 'd3a5bd70c0b5394e7eb7b08662b7b8d8e77501edfbd5add0a4180aa0255ac523'
         };
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'Empty key HMAC': function(test) {
@@ -281,9 +281,9 @@ module.exports = {
             hash: '02a59501d789c97618ee379a29b67db900f6761cb13f961ddde9d0cfa636fd04'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-emptyKey.js'});
-        var hmac = require('./fixtures/hmac-emptyKey.js');
+        var hash = require('./fixtures/hmac-emptyKey.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     'Empty input and empty key HMAC': function(test) {
@@ -293,9 +293,9 @@ module.exports = {
             hash: 'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-all-empty.js'});
-        var hmac = require('./fixtures/hmac-all-empty.js');
+        var hash = require('./fixtures/hmac-all-empty.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data, {encoding: 'hex'}), testCase.hash);
+        test.strictEqual(hash(testCase.data, {encoding: 'hex'}), testCase.hash);
         test.done();
     },
     // Tests with text input
@@ -306,9 +306,9 @@ module.exports = {
             hash: '75d33cb96af397922df77618aad9d97d6e2e4f214e776bddb7d8aec067a533c6'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-1.js'});
-        var hmac = require('./fixtures/hmac-text-input-1.js');
+        var hash = require('./fixtures/hmac-text-input-1.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #2': function(test) {
@@ -318,9 +318,9 @@ module.exports = {
             hash: 'bf832c5684f946ffec322235d43437e4eef19b08404e558f34824275b5a21022'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-2.js'});
-        var hmac = require('./fixtures/hmac-text-input-2.js');
+        var hash = require('./fixtures/hmac-text-input-2.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #3': function(test) {
@@ -330,9 +330,9 @@ module.exports = {
             hash: '9615a95d4a336118c435b9cd54c5e8644ab956b573aa2926274a1280b6674713'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-3.js'});
-        var hmac = require('./fixtures/hmac-text-input-3.js');
+        var hash = require('./fixtures/hmac-text-input-3.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #4': function(test) {
@@ -342,9 +342,9 @@ module.exports = {
             hash: 'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-4.js'});
-        var hmac = require('./fixtures/hmac-text-input-4.js');
+        var hash = require('./fixtures/hmac-text-input-4.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #5': function(test) {
@@ -354,9 +354,9 @@ module.exports = {
             hash: '82ab2762c4ce2dbaad4af907b0f009ff6e2efe6b4899a897fad89fd880936804'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-5.js'});
-        var hmac = require('./fixtures/hmac-text-input-5.js');
+        var hash = require('./fixtures/hmac-text-input-5.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #6': function(test) {
@@ -366,9 +366,9 @@ module.exports = {
             hash: '1df90083e7b9d4bc736de833c30b42999eabb071fd05391ad818b2a5e332eeea'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-6.js'});
-        var hmac = require('./fixtures/hmac-text-input-6.js');
+        var hash = require('./fixtures/hmac-text-input-6.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text jsSHA-based Test #7': function(test) {
@@ -378,9 +378,9 @@ module.exports = {
             hash: '07eff8b326b7798c9ccfcbdbe579489ac785a7995a04618b1a2813c26744777d'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-7.js'});
-        var hmac = require('./fixtures/hmac-text-input-7.js');
+        var hash = require('./fixtures/hmac-text-input-7.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     // Tests with text key and text data
@@ -391,9 +391,9 @@ module.exports = {
             hash: 'bbdae96039d3baf8ebf78c8b2624e2937f466f30f4244630fbd6e63781116e9b'
         };
         generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-1.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-1.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-1.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #2': function(test) {
@@ -403,9 +403,9 @@ module.exports = {
             hash: '271e948668d2db84050ac2a331753da28e0a9eb1601de24b322d97ab6b3894d8'
         };
         generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-2.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-2.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-2.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #3': function(test) {
@@ -415,9 +415,9 @@ module.exports = {
             hash: '9615a95d4a336118c435b9cd54c5e8644ab956b573aa2926274a1280b6674713'
         };
         generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-3.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-3.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-3.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #4': function(test) {
@@ -427,9 +427,9 @@ module.exports = {
             hash: 'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
         };
         generateHmac(testCase.key, {file: 'test/fixtures/hmac-text-input-text-key-4.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-4.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-4.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #5': function(test) {
@@ -439,9 +439,9 @@ module.exports = {
             hash: '82ab2762c4ce2dbaad4af907b0f009ff6e2efe6b4899a897fad89fd880936804'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-5.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-5.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-5.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #6': function(test) {
@@ -451,9 +451,9 @@ module.exports = {
             hash: '1df90083e7b9d4bc736de833c30b42999eabb071fd05391ad818b2a5e332eeea'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-6.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-6.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-6.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #7': function(test) {
@@ -463,9 +463,9 @@ module.exports = {
             hash: '07eff8b326b7798c9ccfcbdbe579489ac785a7995a04618b1a2813c26744777d'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-7.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-7.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-7.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
     'Text key jsSHA-based Test #8': function(test) {
@@ -475,9 +475,9 @@ module.exports = {
             hash: 'b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad'
         };
         generateHmac(testCase.key, {encoding: 'hex', file: 'test/fixtures/hmac-text-input-text-key-8.js'});
-        var hmac = require('./fixtures/hmac-text-input-text-key-8.js');
+        var hash = require('./fixtures/hmac-text-input-text-key-8.js');
         test.expect(1);
-        test.strictEqual(hmac.hash(testCase.data), testCase.hash);
+        test.strictEqual(hash(testCase.data), testCase.hash);
         test.done();
     },
 };

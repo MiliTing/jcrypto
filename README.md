@@ -7,11 +7,11 @@ These are an experimental white-box cryptography tools for JavaScript obfuscatio
 - white-box HMAC-SHA256
 
 ## Installation
-```
+```bash
 npm install jcrypto
 ```
 or
-```
+```bash
 git clone https://github.com/tsu-iscd/jcrypto.git
 cd jcrypto
 npm install
@@ -19,25 +19,68 @@ npm install
 
 ## API
 
-Code generation:
-```
-var key = "1234567891234567";
-var generateAes = require('jcrypto');
-var fs = require('fs');
-var file = 'aes.js';
+### Code generation
 
-var code = generateAes(key, {encoding: 'hex'});
-fs.writeFileSync(file, code);
+```node
+var key = '0123456789abcdef';
+var jcrypto = require('jcrypto');
+var options = {  
+    encoding: 'hex',
+    wrapper: 'UMD',
+    mangle: {  
+        names: true,
+        properties: true
+   },
+   file: 'path/to/aes.js'
+};
+// btw you can call it without options argument, default options described below
+jcrypto.generateAes(key, options);
+
+options.file = 'path/to/hmac.js';
+jcrypto.generateHmac(key, options);
 ```
 
-Encryption:
-```
-var aes = require('aes');
-var input = "Hello, world!";
-var ciphertext = aes.encrypt(plaintext);
-var output = aes.decrypt(ciphertext);
+Code generation options:
+* `encoding` -- key characters encoding; posible values: `hex` or `str` (default)
+* `wrapper` --  code wrapping; posible values: `UMD`, `IIFE` or nothing (default)
+* `mangle` -- mangle names/properties option, properties cache file `./aes-cache.json` for aes and `./hmac-cache.json` for hmac; possible values: `{names: true, properties: true}` (default both false)
+* `file` -- output file option; path to file or return value (default)
+
+### Encryption
+
+```node
+var aes = require('path/to/aes.js');
+var plaintext = 'Hello, world!';
+var options = {
+    counter: '1826e4111826e4111826e4111826e411', 
+    encoding: 'str'
+};
+var ciphertext = aes.encrypt(plaintext, options);
+var output = aes.decrypt(ciphertext, options);
 // Hello, world!
 ```
+
+Encryption options:
+
+* `counter` -- counter for CTR AES mode; string 32 symbols (default 0)
+* `encoding` -- plain text or encrypt text encoding; posible values are `hex` or `str`(default)
+
+
+### Hashing
+
+```node
+var hash = require('path/to/hmac.js');
+var text = 'Hello, world!';
+var options = {
+    encoding: 'str'
+}
+var output = hash(text, options);
+// 8dcb6767c395b28b46ea0f0216cb3aa25b6ff46f0181ab035f3cf7fd3914c45e
+```
+
+Hashing options:
+* `encoding` -- text encoding; posible values are `hex` or `str`(default)
+
 
 ## Command line interface
 
@@ -51,7 +94,7 @@ The `bin/jcrypto` utility can be used to generate code of white-box crypto algor
 
 Example:
 
-```
+```bash
 $ bin/jcrypto -a aes -k 1234567891234567 -o wbaes.js
 ```
 

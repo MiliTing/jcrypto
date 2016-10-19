@@ -4,7 +4,8 @@
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen'),
-        esformatter = require('esformatter'),
+        mangle = require('./mangler.js'),
+        wrapper = require('./wrapper.js'),
         path = require('path');
 
     var sha256 = {}, hmac = {};
@@ -223,32 +224,14 @@
 
         return state;
     };
-
-    // UMD (Universal Module Definition)
-    hmac.wrapper = function(funcString, returnValue) {
-        var code =
-        '(function (root, factory) {\n' +
-        '   if (typeof define === \'function\' && define.amd) {\n' +
-        '        define([], factory);\n' +
-        '   } else if (typeof module === \'object\' && module.exports) {\n' +
-        '       module.exports = factory();\n' +
-        '   } else {\n' +
-        '      root.hmac = factory();\n' +
-        '   }\n' +
-        '}(this, function () {\n' +
-        funcString + '\n' +
-        'return ' + returnValue + ';\n}));\n';
-
-        var options = {indent: {value: '    '}};
-        return esformatter.format(code, options);
-    };
-
+   
     // Generate whitebox-hmac code and write it in a file
     hmac.generateAlgorithm = function(key, options) {
-        var code, hmacCode, mixing, tree, state, body, i, len, encoding;
-        encoding = options.encoding;
+        var code, mixing, tree, state, body, i, len;
 
-        if (encoding === 'hex') {
+        options = options || {};
+
+        if(options.encoding === 'hex') {
             key = new Buffer(key, 'hex');
         } else {
             key = new Buffer(key);
@@ -260,7 +243,7 @@
         // Get module's body
         body = tree.body;
         // Delete original Aes declaration
-        body.splice(1, 1);
+        body.splice(0, 1);
         // Get parse tree for added code
         mixing =  esprima.parse(
             'var hmac = {};\n' +
@@ -268,12 +251,23 @@
         );
         // Add Aes declarations to tree
         for(i = 0, len = mixing.body.length; i < len; i++) {
-            body.splice(1 + i, 0, mixing.body[i]);
+            body.splice(i, 0, mixing.body[i]);
         }
 
-        hmacCode = escodegen.generate(tree);
-        return hmac.wrapper(hmacCode, 'hmac.hash');
+        code = escodegen.generate(tree);
+        
+        if(options.wrapper) {
+            options.returnValue = 'hmac.hash';
+            options.windowObject = 'hmac';
+            code = wrapper(code, options);
+        }
 
+        if(options.mangle) {
+            options.mangle.filename = 'hmac-cache.json';
+            code = mangle(code, options.mangle);
+        }
+
+        return code;
     };
 
     module.exports = hmac.generateAlgorithm;

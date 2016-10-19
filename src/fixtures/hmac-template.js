@@ -1,4 +1,3 @@
-'use strict';
 var hmac = {};
 hmac.blockSize = 16;
 
@@ -96,7 +95,7 @@ hmac.hashBytes = function(blocks, state) {
             W[j] = blocks[i][j];
         }
         for (j = hmac.blockSize; j < 64; j++) {
-            W[j] = (hmac.σ1(W[j - 2]) + W[j - 7] + hmac.σ0(W[j - 15]) + W[j - 16]);
+            W[j] = (hmac.t1(W[j - 2]) + W[j - 7] + hmac.t0(W[j - 15]) + W[j - 16]);
             W[j] &= 0xffffffff;
         }
         // 2 - initialise working variables a, b, c, d, e, f, g, h with state values
@@ -150,10 +149,10 @@ hmac.s0  = function(x) {
 hmac.s1  = function(x) {
     return hmac.rotr(6,  x) ^ hmac.rotr(11, x) ^ hmac.rotr(25, x);
 };
-hmac.σ0  = function(x) {
+hmac.t0  = function(x) {
     return hmac.rotr(7,  x) ^ hmac.rotr(18, x) ^ (x >>> 3);
 };
-hmac.σ1  = function(x) {
+hmac.t1  = function(x) {
     return hmac.rotr(17, x) ^ hmac.rotr(19, x) ^ (x >>> 10);
 };
 hmac.ch  = function(x, y, z) {

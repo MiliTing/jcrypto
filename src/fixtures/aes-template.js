@@ -1,4 +1,3 @@
-'use strict';
 var Aes = {};
 Aes.blockSize = 16;
 Aes.nBits = 128;

@@ -4,7 +4,8 @@
     var fs = require('fs'),
         esprima = require('esprima'),
         escodegen = require('escodegen'),
-        esformatter = require('esformatter'),
+        mangle = require('./mangler.js'),
+        wrapper = require('./wrapper.js'),
         path = require('path');
 
     var aes = {};
@@ -244,37 +245,22 @@
         return TyTable;
     };
 
-    aes.wrapper = function(funcString, returnValue) {
-        var code =
-        '(function (root, factory) {\n' +
-        '   if (typeof define === \'function\' && define.amd) {\n' +
-        '        define([], factory);\n' +
-        '   } else if (typeof module === \'object\' && module.exports) {\n' +
-        '       module.exports = factory();\n' +
-        '   } else {\n' +
-        '      root.aes = factory();\n' +
-        '   }\n' +
-        '}(this, function () {\n' +
-        funcString + '\n' +
-        'return ' + returnValue + ';\n}));\n';
-
-        var options = {indent: {value: '    '}};
-        return esformatter.format(code, options);
-    };
-
     // Generate whitebox-aes code and write it in a file
     aes.generateAlgorithm = function(key, options) {
-        var code, aesCode, mixing, tree, body, TBoxes, TyTables, i, len, encoding;
-        encoding = options.encoding;
-        if ((key.length !== 16 && !encoding) ||
-                (key.length !== 32 && encoding)) {
-            throw Error('Improper key length');
-        }
-        if (encoding === 'hex') {
+        var code, mixing, tree, body, TBoxes, TyTables, i, len;
+                
+        options = options || {};
+
+        if (options.encoding === 'hex') {
             key = new Buffer(key, 'hex');
         } else {
             key = new Buffer(key);
         }
+        
+        if(key.length !== 16) {
+            throw Error('Improper key length');
+        }
+
         TBoxes = aes.generateBoxes(key);
         TyTables = aes.generateTyTable();
         
@@ -283,7 +269,7 @@
         // Get module's body
         body = tree.body;
         // Delete original Aes declaration
-        body.splice(1, 1);
+        body.splice(0, 1);
         // Get parse tree for added code
         mixing =  esprima.parse(
             'var Aes = {};\n' +
@@ -295,11 +281,23 @@
         // Add Aes declarations to tree
         
         for(i = 0, len = mixing.body.length; i < len; i++) {
-            body.splice(1 + i, 0, mixing.body[i]);
+            body.splice(i, 0, mixing.body[i]);
         }
         
-        aesCode = escodegen.generate(tree);
-        return  aes.wrapper(aesCode, '{encrypt: Aes.encrypt, decrypt: Aes.decrypt}');
+        code = escodegen.generate(tree);
+
+        if(options.wrapper) {
+            options.returnValue = '{encrypt: Aes.encrypt, decrypt: Aes.decrypt}';
+            options.windowObject = 'aes';
+            code = wrapper(code, options);
+        }
+
+        if(options.mangle) {
+            options.mangle.filename = 'aes-cache.json';
+            code = mangle(code, options.mangle);
+        }
+
+        return code;
     };
     module.exports = aes.generateAlgorithm;
 }());

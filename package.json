@@ -1,7 +1,7 @@
 {
   "name": "jcrypto",
   "description": "JavaScript white-box cryptography tools",
-  "version": "0.1.1-dev",
+  "version": "0.2.1-dev",
   "homepage": "https://github.com/tsu-iscd/jcrypto",
   "author": "Tomsk State University Information Security and Cryptography Department",
   "maintainers": [

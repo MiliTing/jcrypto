@@ -1,5 +1,5 @@
 # jCrypto
-These are an experimental white-box cryptography tools for JavaScript obfuscation. Please do not use them in production cryptography.
+These are experimental white-box cryptography tools for JavaScript obfuscation. Please do not use them in production cryptography.
 
 ## Threat Model
 The goal of `jCrypto` is to provide white-box cryptographic algorithms for JavaScript obfuscation on a client-side in browsers.

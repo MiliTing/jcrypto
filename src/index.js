@@ -1,4 +1,4 @@
 module.exports = {
-    generateHMAC: require('../src/hmac-generator'),
-    generateAES: require('../src/aes-generator')
+    generateHmac: require('../src/hmac-generator'),
+    generateAes: require('../src/aes-generator')
 };

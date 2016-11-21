@@ -1,4 +1,3 @@
-'use strict';
 var hmac = {};
 hmac.blockSize = 16;
 

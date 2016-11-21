@@ -7,9 +7,12 @@ An attacker can run protected scripts in a controlled browser, he can examine ar
 This is very strong threat model.
 
 `jCrypto` is a research project and it can not be used to provide classic cryptography properties.
-`jCrypto` implements a weak table-based AES-encryption without additional encoding and protecting of AES secret key. An attacker can compute the key directly [[3](https://eprint.iacr.org/2013/104.pdf)].
+
 `jCrypto` implements a new white-box HMAC-SHA256 algorithm proposed by our team [[2](http://www.mathnet.ru/links/31303c3ca85d02fecff4f980a844ddc1/pdma275.pdf)]. 
 It is very likely that proposed white-box HMAC scheme has cryptographic weaknesses. So, we will be happy if you will report found issues to us.
+
+`jCrypto` implements a weak table-based AES-encryption without additional encoding and protecting of AES secret key. An attacker can compute the key directly [[3](https://eprint.iacr.org/2013/104.pdf)].
+
 
 ## Algorithms
 - white-box AES128-CTR (table-based implementation)

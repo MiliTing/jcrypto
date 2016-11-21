@@ -1,6 +1,16 @@
 # jCrypto
-
 These are an experimental white-box cryptography tools for JavaScript obfuscation.
+
+## Threat Model
+The attacker runs software on their own devices. They are able to examine its inputs, outputs, and, with the help of a browser debugger ), the result of every intermediate computation it carries out. The attacker has total visibility into the cryptographic operation.
+
+## Security Goals
+### Security Goals
+JavaScript obfuscation using `AES` and `HMAC` on a client-side
+
+### Non-Goals
+Confidentiality of sensitive data is not goal of this project.
+`jCrypto` implements weak table-based encryption without additional encoding and doesn’t protect AES key. The attacker can computer the key byte directly.
 
 ## Algorithms
 - white-box AES128-CTR

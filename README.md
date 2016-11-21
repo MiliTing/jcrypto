@@ -1,20 +1,19 @@
 # jCrypto
-These are an experimental white-box cryptography tools for JavaScript obfuscation.
+These are an experimental white-box cryptography tools for JavaScript obfuscation. Please do not use them in production cryptography.
 
 ## Threat Model
-The attacker runs software on their own devices. They are able to examine its inputs, outputs, and, with the help of a browser debugger ), the result of every intermediate computation it carries out. The attacker has total visibility into the cryptographic operation.
+The goal of `jCrypto` is to provide white-box cryptographic algorithms for JavaScript obfuscation on a client-side in browsers.
+An attacker can run protected scripts in a controlled browser, he can examine arbitrary input, output, and he can also use browser's debugger, change scripts' code, etc. The attacker has total control over cryptographic operations and scripts execution.
+This is very strong threat model.
 
-## Security Goals
-### Security Goals
-JavaScript obfuscation using `AES` and `HMAC` on a client-side
-
-### Non-Goals
-Confidentiality of sensitive data is not goal of this project.
-`jCrypto` implements weak table-based encryption without additional encoding and doesn’t protect AES key. The attacker can computer the key byte directly.
+`jCrypto` is a research project and it can not be used to provide classic cryptography properties.
+`jCrypto` implements a weak table-based AES-encryption without additional encoding and protecting of AES secret key. An attacker can compute the key directly [3](https://eprint.iacr.org/2013/104.pdf).
+`jCrypto` implements a new white-box HMAC-SHA256 algorithm proposed by our team [2](http://www.mathnet.ru/links/31303c3ca85d02fecff4f980a844ddc1/pdma275.pdf). 
+It is very likely that proposed white-box HMAC scheme has cryptographic weaknesses. So, we will be happy if you will report found issues to us.
 
 ## Algorithms
-- white-box AES128-CTR
-- white-box HMAC-SHA256
+- white-box AES128-CTR (table-based implementation)
+- white-box HMAC-SHA256 (own algorithm)
 
 ## Installation
 ```bash
@@ -117,3 +116,5 @@ $ bin/jcrypto -a aes -k 1234567891234567 -o wbaes.js
 ## References
 1. [En] [Oleg Broslavsky, Denis Kolegov, Nikita Oleksov. White-Box HMAC.] (http://www.slideshare.net/yalegko/whitebox-hmac-make-your-cipher-secure-to-whitebox-attacks)
 2. [Ru] [Oleg Broslavsky, Denis Kolegov, Nikita Oleksov. HMAC Obfuscation Method for Implementation in Untrusted Systems. ](http://www.mathnet.ru/links/31303c3ca85d02fecff4f980a844ddc1/pdma275.pdf)
+3. [James A. Muir. A Tutorial on White-box AES.](https://eprint.iacr.org/2013/104.pdf)
+4. [S. Chow, P. Eisen, H. Johnson, P.C. van Oorschot. White-Box Cryptography and an AES Implementation.] (http://dl.acm.org/citation.cfm?id=694920)

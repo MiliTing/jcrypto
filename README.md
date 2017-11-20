@@ -29,6 +29,18 @@ cd jcrypto
 npm install
 ```
 
+## Tests
+After installation run:
+
+```
+npm test
+```
+or
+
+```
+grunt
+```
+
 ## API
 
 ### Code generation

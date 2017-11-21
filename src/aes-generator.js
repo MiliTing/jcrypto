@@ -44,7 +44,6 @@
         [0x36, 0x00, 0x00, 0x00]
     ];
 
-
     // Tables for field multiplication in AES GF
     aes.multGF = [];
 
@@ -191,7 +190,6 @@
         return rows;
     };
 
-
     aes.mergeRoundKey = function(key) {
         var k = key[0];
         for(var i = 1; i < 4; i++) {
@@ -248,7 +246,7 @@
     // Generate whitebox-aes code and write it in a file
     aes.generateAlgorithm = function(key, options) {
         var code, mixing, tree, body, TBoxes, TyTables, i, len;
-                
+
         options = options || {};
 
         if (options.encoding === 'hex') {
@@ -263,7 +261,7 @@
 
         TBoxes = aes.generateBoxes(key);
         TyTables = aes.generateTyTable();
-        
+
         code = fs.readFileSync(path.join(__dirname, '/fixtures/aes-template.js'), 'utf8');
         tree = esprima.parse(code);
         // Get module's body
@@ -279,11 +277,11 @@
             'Aes.TyTables = JSON.parse(preTyTables);\n'
         );
         // Add Aes declarations to tree
-        
+
         for(i = 0, len = mixing.body.length; i < len; i++) {
             body.splice(i, 0, mixing.body[i]);
         }
-        
+
         code = escodegen.generate(tree);
 
         if(options.wrapper) {
@@ -295,6 +293,14 @@
         if(options.mangle) {
             options.mangle.filename = 'aes-cache.json';
             code = mangle(code, options.mangle);
+        }
+
+        if(options.file) {
+            fs.writeFile(options.file, code, function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            });
         }
 
         return code;

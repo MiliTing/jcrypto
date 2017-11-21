@@ -47,7 +47,7 @@
         M[N - 1][14] = ((msg.length - 1) * 8) / Math.pow(2, 32);
         M[N - 1][14] = Math.floor(M[N - 1][14]);
         M[N - 1][15] = ((msg.length - 1) * 8) & 0xffffffff;
-        
+
         var W = [];
         var a, b, c, d, e, f, g, h;
         for (i = 0; i < N; i++) {
@@ -57,7 +57,7 @@
             for (t = 16; t < 64; t++) {
                 W[t] = (sha256.σ1(W[t - 2]) + W[t - 7] + sha256.σ0(W[t - 15]) + W[t - 16]) & 0xffffffff;
             }
-            
+
             a = H[0];
             b = H[1];
             c = H[2];
@@ -224,7 +224,7 @@
 
         return state;
     };
-   
+
     // Generate whitebox-hmac code and write it in a file
     hmac.generateAlgorithm = function(key, options) {
         var code, mixing, tree, state, body, i, len;
@@ -255,7 +255,7 @@
         }
 
         code = escodegen.generate(tree);
-        
+
         if(options.wrapper) {
             options.returnValue = 'hmac.hash';
             options.windowObject = 'hmac';
@@ -265,6 +265,14 @@
         if(options.mangle) {
             options.mangle.filename = 'hmac-cache.json';
             code = mangle(code, options.mangle);
+        }
+
+        if(options.file) {
+            fs.writeFile(options.file, code, function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            });
         }
 
         return code;
